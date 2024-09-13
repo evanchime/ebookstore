@@ -32,7 +32,7 @@ eBookstore is a command-line application with a user-friendly interface that all
 
 3. Install the required dependencies:
     ```
-    pip install sqlite tabulate[widechars]
+    pip install tabulate[widechars]
     ```
 
 ## Usage
