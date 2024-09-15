@@ -63,7 +63,6 @@ database_file [optional_table_records_file]"
                 f"File '{table_file}' doesn't exist. Check your spelling"
             ) from e
     
-
     # Create an instance of the BookStore Database
     book_store = BookStore(database_file, table)
 
@@ -80,7 +79,6 @@ database_file [optional_table_records_file]"
             ).strip()
 
             if menu == '1':
-                
                 try:
                     # Get the book details the first time from the user
                     book = get_book()
@@ -95,9 +93,7 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e
-
-            if menu == '2':
-                
+            elif menu == '2':
                 try:
                     # Get the book details from the user
                     book_info = get_book_info()
@@ -115,9 +111,7 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e
-            
-            if menu == '3':
-            
+            elif menu == '3':
                 try:
                     # Get the book details from the user
                     book_info = get_book_info()    
@@ -132,9 +126,7 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e
-                    
-            if menu == '4':
-                
+            elif menu == '4':
                 try:
                     # Get the book details from the user
                     # book_info = get_book_info()
@@ -150,11 +142,12 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e        
-
-            if menu == '0':
+            elif menu == '0':
                 # Exit the application
                 exit_utility(book_store) 
-                    
+            else:
+                print("\nInvalid option. Please select a valid option.")
+                exit_or_return(book_store)
         except ValueError as e:
             print('\n', e, sep='')
             exit_or_return(book_store)
@@ -175,3 +168,4 @@ except DatabaseError as e:
 except Exception as e:
     print(f"An error occurred: {e}")
     sys.exit(1)
+    
