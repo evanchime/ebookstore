@@ -321,9 +321,10 @@ try again."
 
 def get_book_search_info():
     '''Get book information from the user. The user can provide the id 
-    of the book or the title or the author or both of the book. If the 
-    user provides the id of the book, or the title or the author or both 
-    the function will return the values respectively in a dictionary.
+    of the book or the title or the author or both title and author of 
+    the book. If the user provides the id of the book, or the title or 
+    the author or both the function will return the values respectively 
+    in a dictionary.
     '''
     count = 0  # The number of times user enters an invalid input
 
