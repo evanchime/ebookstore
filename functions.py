@@ -178,11 +178,12 @@ Please try again."
 
 def get_book_update_info(book_info):
     '''Get book information from the user. The user provides the field
-    to update and the new value of the field. The function returns the 
-    field and the new value of the field stored in a dictionary called 
-    book_info. The field can be 'Title', 'Author' or 'Quantity'. If the
-    field is 'Quantity', the user can choose to add or subtract from the
-    quantity of the book. 
+    to update, the new value of the field and if quantity to update, the 
+    action to perform on the quantity. The function returns the field, 
+    the new value of the field and action on quantity stored in a 
+    dictionary called book_info. The field can be 'Title', 'Author' or 
+    'Quantity'. If the field is 'Quantity', the user can choose to add 
+    to, subtract from or set the quantity of the book. 
     '''
     count = 0  # The number of times user enters an invalid input
 
