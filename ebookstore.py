@@ -9,6 +9,7 @@ The program takes two command line arguments:
 - 1st argument is path to the database file named 'data/ebookstore_db'. 
 Feel free to use another file
 - 2nd argument is path to the file containing a predefined table records
+named 'table_records.txt' note: the second argument is optional
 
 The program will use the sqlite3 database to store the book records.
 
