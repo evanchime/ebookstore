@@ -263,8 +263,6 @@ try again."
                 "\nEnter the quantiy of the book: "
             ).strip()
         book_info["qty"] = int(book_info["qty"])
-        # If the user wants to subtract from the quantity, the quantity
-        # should be negative
     elif book_info["field"] == "title":
         count = 0  # Reset
         
