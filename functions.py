@@ -64,7 +64,7 @@ Please try again."
 
         book_info["title"] = input(
             "\nEnter the title of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # The title can not be empty after 3 attempts
         while not book_info["title"]:
@@ -75,7 +75,7 @@ Please try again."
             print("\nTitle cannot be empty. Please try again.")
             book_info["title"] = input(
                 "\nEnter the title of the book: "
-            ).strip().casefold()
+            ).strip()
 
         book_info["title"] = re.sub(  # Ensure no excess space in title
             r" +", " ", book_info["title"]
@@ -85,7 +85,7 @@ Please try again."
 
         book_info["author"] = input(
             "\nEnter the author of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # Author cannot be empty after 3 attempts
         while not book_info["author"]:
@@ -96,7 +96,7 @@ Please try again."
             print("\nAuthor cannot be empty. Please try again.")
             book_info["author"] = input(
                 "\nEnter the author of the book: "
-            ).strip().casefold()
+            ).strip()
 
          # Ensure no excess space in author
         book_info["author"] = re.sub( 
@@ -114,7 +114,7 @@ def get_book():
     count = 0  # The number of times user enters an invalid input
     user_input_title = input(
         "\nEnter the title of the book: "
-    ).strip().casefold()
+    ).strip()
 
     # Title can not be empty after 3 attempts
     while not user_input_title:
@@ -125,7 +125,7 @@ def get_book():
         print("\nTitle can't be empty. Please try again.")
         user_input_title = input(
             "\nEnter the title of the book: "
-        ).strip().casefold()
+        ).strip()
 
     # Ensure no excess space in title user provided
     user_input_title = re.sub(r" +", " ", user_input_title)
@@ -133,7 +133,7 @@ def get_book():
     count = 0  # Reset
     user_input_author = input(
         "\nEnter the author of the book: "
-    ).strip().casefold()
+    ).strip()
 
     # Author cannot be empty after 3 attempts
     while not user_input_author:
@@ -144,7 +144,7 @@ def get_book():
         print("\nAuthor can't be empty. Please try again.")
         user_input_author = input(
             "\nEnter the author of the book: "
-        ).strip().casefold()
+        ).strip()
 
     # Ensure no excess space in author user provided
     user_input_author = re.sub(r" +", " ", user_input_author)
@@ -268,7 +268,7 @@ try again."
         
         book_info["new_title"] = input(
             "\nEnter the new title of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # New title cannot be empty after 3 attempts
         while not book_info["new_title"]:
@@ -283,7 +283,7 @@ try again."
             )
             book_info["new_title"] = input(
                 "\nEnter the new title of the book: "
-            ).strip().casefold()
+            ).strip()
 
         # Ensure no excess space in new title
         book_info["new_title"] = re.sub(
@@ -294,7 +294,7 @@ try again."
         
         book_info["new_author"] = input(
             "\nEnter the new author of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # New author cannot be empty after 3 attempts
         while not book_info["new_author"]:
@@ -309,7 +309,7 @@ try again."
             )
             book_info["new_author"] = input(
                 "\nEnter the new author of the book: "
-            ).strip().casefold()
+            ).strip()
 
         # Ensure no excess space in new author
         book_info["new_author"] = re.sub(
@@ -336,7 +336,7 @@ def get_book_search_info():
 3. The author name
 4. The title and author name
 5. None of the above
-: ''').casefold().strip()
+: ''').strip()
     
     # User has 3 attempts to provide correct input
     while menu_2 not in ['1', '2', '3', '4', '5']:
@@ -356,7 +356,7 @@ author or both of the book"
 3. The author name
 4. The title and author name
 5. None of the above
-: ''').casefold().strip()
+: ''').strip()
     
     if menu_2 == '1':
         count = 0
@@ -385,7 +385,7 @@ Please try again."
 
         book_info["title"] = input(
             "\nEnter the title of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # The title can not be empty after 3 attempts
         while not book_info["title"]:
@@ -396,7 +396,7 @@ Please try again."
             print("\nTitle cannot be empty. Please try again.")
             book_info["title"] = input(
                 "\nEnter the title of the book: "
-            ).strip().casefold()
+            ).strip()
 
         book_info["title"] = re.sub(  # Ensure no excess space in title
             r" +", " ", book_info["title"]
@@ -406,7 +406,7 @@ Please try again."
 
         book_info["author"] = input(
             "\nEnter the author of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # Author cannot be empty after 3 attempts
         while not book_info["author"]:
@@ -417,7 +417,7 @@ Please try again."
             print("\nAuthor cannot be empty. Please try again.")
             book_info["author"] = input(
                 "\nEnter the author of the book: "
-            ).strip().casefold()
+            ).strip()
 
          # Ensure no excess space in author
         book_info["author"] = re.sub(
@@ -428,7 +428,7 @@ Please try again."
 
         book_info["title"] = input(
             "\nEnter the title of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # The title can not be empty after 3 attempts
         while not book_info["title"]:
@@ -439,7 +439,7 @@ Please try again."
             print("\nTitle cannot be empty. Please try again.")
             book_info["title"] = input(
                 "\nEnter the title of the book: "
-            ).strip().casefold()
+            ).strip()
 
         book_info["title"] = re.sub(  # Ensure no excess space in title
             r" +", " ", book_info["title"]
@@ -449,7 +449,7 @@ Please try again."
 
         book_info["author"] = input(
             "\nEnter the author of the book: "
-        ).strip().casefold()
+        ).strip()
 
         # Author cannot be empty after 3 attempts
         while not book_info["author"]:
@@ -460,7 +460,7 @@ Please try again."
             print("\nAuthor cannot be empty. Please try again.")
             book_info["author"] = input(
                 "\nEnter the author of the book: "
-            ).strip().casefold()
+            ).strip()
 
          # Ensure no excess space in author
         book_info["author"] = re.sub(
