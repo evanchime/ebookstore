@@ -26,19 +26,16 @@ from functions import get_book, get_book_info, get_book_update_info, \
     get_book_search_info, exit_or_return, exit_utility
 
 try:
-    # Extract the database and table file paths from the command line 
-    # arguments
+    # Extract the database and table records file paths from the command 
+    # line arguments, after checking if the required number of arguments 
+    # are provided
+    if len(sys.argv) < 2:
+        raise Exception(
+            "Not enough arguments provided. Usage: python3 script_name.py \
+database_file [optional_table_records_file]"
+        )
     database_file = sys.argv[1]
-    table_file = sys.argv[2]
-#     if len(sys.argv) < 2:
-#         print(
-#             "Usage: python3 script_name.py database_file \
-# [optional_table_records_file]"
-#         )
-#         sys.exit(1)
-
-    # database_file = sys.argv[1]
-    # table_file = sys.argv[2] if len(sys.argv) > 2 else None
+    table_file = sys.argv[2] if len(sys.argv) > 2 else None
    
     # Create the directory(s) if it/they doesn't exist
     try:
@@ -49,29 +46,22 @@ try:
     '{os.path.dirname(database_file)}'"
         ) from e
 
-    # Create the directory(s) if it/they doesn't exist
-    try:
-        os.makedirs(os.path.dirname(table_file), exist_ok=True)
-    except PermissionError as e:
-        raise PermissionError(
-            f"You don't have permission to create directory \
-    '{os.path.dirname(table_file)}'"
-        ) from e
-
     table = []  # Create an empty list to store the table records
 
-    try:
-        # Read the predefined records from a file into list table
-        with open(table_file, 'r') as file:
-            for index, line in enumerate(file):
-                if index == 0:
-                    continue
-                record = line.strip().split('|')
-                table.append((record[0], record[1], record[2], record[3]))
-    except FileNotFoundError as e:
-        raise FileNotFoundError(
-            f"File '{table_file}' doesn't exist. Check your spelling"
-        ) from e
+    if table_file:  # Check if the table file is provided
+
+        try:
+            # Read the predefined records from a file into list table
+            with open(table_file, 'r') as file:
+                for index, line in enumerate(file):
+                    if index == 0:
+                        continue
+                    record = line.strip().split('|')
+                    table.append((record[0], record[1], record[2], record[3]))
+        except FileNotFoundError as e:
+            raise FileNotFoundError(
+                f"File '{table_file}' doesn't exist. Check your spelling"
+            ) from e
     
 
     # Create an instance of the BookStore Database
@@ -182,3 +172,6 @@ except PermissionError as e:
 except DatabaseError as e:
     print(f'\nDatabase error: {e}')
     book_store.db.close()
+except Exception as e:
+    print(f"An error occurred: {e}")
+    sys.exit(1)
