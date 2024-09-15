@@ -215,7 +215,7 @@ update"
     if book_info["field"] == "quantity": 
         count = 0
 
-        # User adds or subtracts from the quantity of the book
+        # User adds to, subtracts from  or sets the quantity of the book
         book_info["action"] = input(
             "\nDo you want to add to or subtract from the quantity or set to \
 a new quantity? Enter 'add' or 'sub' or 'set': "
@@ -321,10 +321,9 @@ try again."
 
 def get_book_search_info():
     '''Get book information from the user. The user can provide the id 
-    of the book or the title and author of the book. If the user 
-    provides the id of the book, the function will return the id of the 
-    book in a dictionary. If the user provides the title and author of 
-    the book, the function will return the title and author of the book,
+    of the book or the title or the author or both of the book. If the 
+    user provides the id of the book, or the title or the author or both 
+    the function will return the values respectively in a dictionary.
     '''
     count = 0  # The number of times user enters an invalid input
 
