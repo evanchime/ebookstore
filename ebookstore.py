@@ -29,6 +29,15 @@ try:
     # arguments
     database_file = sys.argv[1]
     table_file = sys.argv[2]
+#     if len(sys.argv) < 2:
+#         print(
+#             "Usage: python3 script_name.py database_file \
+# [optional_table_records_file]"
+#         )
+#         sys.exit(1)
+
+    # database_file = sys.argv[1]
+    # table_file = sys.argv[2] if len(sys.argv) > 2 else None
    
     # Create the directory(s) if it/they doesn't exist
     try:
@@ -169,5 +178,6 @@ except FileNotFoundError as e:
     print(f'\nFile not found: {e}')
 except PermissionError as e:
     print(f'\nPermission denied: {e}')
-finally:
+except DatabaseError as e:
+    print(f'\nDatabase error: {e}')
     book_store.db.close()
