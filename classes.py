@@ -364,8 +364,8 @@ of this book in stock, but you want to reduce the stock by {book_info["qty"]}"
                     (book_info["title"], )
                 )
             
-            records = self.cursor.fetchall() # If book exists
-            if not records:
+            records = self.cursor.fetchall() 
+            if not records:  # If book doesn't exist
                 print("\nBook not found")
             else:  # Print the book details in a tabular format
                 headers = ["ID", "Title", "Author", "Quantity"]
