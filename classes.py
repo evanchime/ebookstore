@@ -19,8 +19,8 @@ class Book():
 
 class BookStore():
     '''A BookStore class to manage the book store inventory. It takes
-    the database file and an optional table records as arguments'''
-    def __init__(self, database_file, table_records=None):
+    the database file and an optional table as arguments'''
+    def __init__(self, database_file, table=None):
         try:
             # Connect to sqlite
             self.db = sqlite3.connect(database_file)
@@ -59,14 +59,14 @@ class BookStore():
             ) from e
 
         try:
-            # Insert table records into database if table records is provided
-            if table_records is not None:
+            # Insert table records into database if table is provided
+            if table is not None:
                 # If records exist in the database, ignore them
                 self.cursor.executemany(
                     '''INSERT OR IGNORE INTO book (id, title, author, qty) 
                     VALUES (?, ?, ?, ?)
                     ''', 
-                    table_records
+                    table
                 )
                 self.db.commit()  # Changes were successful so commit
         except DatabaseError as e:
@@ -125,7 +125,8 @@ class BookStore():
     def update_book(self, book_info):
         '''Update a book in the database. It takes a dictionary as an
         argument. The dictionary contains the book id, title, author,
-        quantity, and the field to update. If the book is found, it
+        the field to update and the new value, and if quantity to 
+        update, the action on the quantity. If the book is found, it
         updates the book details and prints a message that the book was
         updated successfully. If the book is not found, it prints a
         message that the book was not found. If there is an error, it
