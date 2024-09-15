@@ -68,7 +68,7 @@ database_file [optional_table_records_file]"
 
     while True:
         try:
-            menu = input(
+            menu_1 = input(
 """\nSelect one of the following options:
 1. Enter book
 2. Update book
@@ -78,7 +78,7 @@ database_file [optional_table_records_file]"
 : """      
             ).strip()
 
-            if menu == '1':
+            if menu_1 == '1':
                 try:
                     # Get the book details the first time from the user
                     book = get_book()
@@ -93,7 +93,7 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e
-            elif menu == '2':
+            elif menu_1 == '2':
                 try:
                     # Get the book details from the user
                     book_info = get_book_info()
@@ -111,7 +111,7 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e
-            elif menu == '3':
+            elif menu_1 == '3':
                 try:
                     # Get the book details from the user
                     book_info = get_book_info()    
@@ -126,7 +126,7 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e
-            elif menu == '4':
+            elif menu_1 == '4':
                 try:
                     # Get the book details from the user
                     # book_info = get_book_info()
@@ -142,7 +142,7 @@ database_file [optional_table_records_file]"
                     raise e
                 except DatabaseError as e:
                     raise e        
-            elif menu == '0':
+            elif menu_1 == '0':
                 # Exit the application
                 exit_utility(book_store) 
             else:
@@ -168,4 +168,3 @@ except DatabaseError as e:
 except Exception as e:
     print(f"An error occurred: {e}")
     sys.exit(1)
-    
