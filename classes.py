@@ -30,7 +30,7 @@ class BookStore():
         except DatabaseError as e:
             self.db.rollback()  # Rollback any changes if error
             raise DatabaseError(
-                "Error while connecting to the database"
+                "Error while setting up the database"
             ) from e
         except PermissionError as e:
             raise PermissionError(
@@ -63,7 +63,7 @@ class BookStore():
             if table is not None:
                 # If records exist in the database, replace them
                 self.cursor.executemany(
-                    '''INSERT OR REPLACE INTO book (id, title, author, qty) 
+                    '''INSERT OR IGNORE INTO book (id, title, author, qty) 
                     VALUES (?, ?, ?, ?)
                     ''', 
                     table
@@ -146,8 +146,11 @@ class BookStore():
                     # If user wants to update quantity
                     if book_info["field"] == "quantity":
                         if book_info["action"] == "sub":
-                            # Add to or subtract from quantity
-                            qty = record[3] - book_info["qty"]  
+                            # Subtract from quantity
+                            qty = record[3] - book_info["qty"]
+                        elif book_info["action"] == "add":
+                            # Add to quantity
+                            qty = record[3] + book_info["qty"]  
                         else:  # Set quantity to a specific value
                             qty = book_info["qty"]  
                         if qty < 0:  # Book quantity can't be negative
@@ -195,8 +198,11 @@ have {record[3]} of this book in stock, but you want to reduce the stock by \
                     book_found = True
                     # If user wants to update quantity
                     if book_info["field"] == "quantity":
-                        if book_info["action"] != "set":
-                            # Add to or subtract from quantity
+                        if book_info["action"] == "sub":
+                            # Subtract from quantity
+                            qty = record[3] - book_info["qty"]
+                        elif book_info["action"] == "add":
+                            # Add to quantity
                             qty = record[3] + book_info["qty"]  
                         else:  # Set quantity to a specific value
                             qty = book_info["qty"]  
