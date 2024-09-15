@@ -35,7 +35,7 @@ try:
 database_file [optional_table_records_file]"
         )
     database_file = sys.argv[1]
-    table_file = sys.argv[2] if len(sys.argv) > 2 else None
+    table_records_file = sys.argv[2] if len(sys.argv) > 2 else None
    
     # Create the directory(s) if it/they doesn't exist
     try:
@@ -46,25 +46,28 @@ database_file [optional_table_records_file]"
     '{os.path.dirname(database_file)}'"
         ) from e
 
-    table = []  # Create an empty list to store the table records
+    table_records = []  # Create an empty list to store the table records
 
-    if table_file:  # Check if the table file is provided
+    if table_records_file:  # Check if the table file is provided
 
         try:
             # Read the predefined records from a file into list table
-            with open(table_file, 'r') as file:
+            with open(table_records_file, 'r') as file:
                 for index, line in enumerate(file):
                     if index == 0:
                         continue
                     record = line.strip().split('|')
-                    table.append((record[0], record[1], record[2], record[3]))
+                    table_records.append(
+                        (record[0], record[1], record[2], record[3])
+                    )
         except FileNotFoundError as e:
             raise FileNotFoundError(
-                f"File '{table_file}' doesn't exist. Check your spelling"
+                f"File '{table_records_file}' doesn't exist. Check your \
+spelling"
             ) from e
     
     # Create an instance of the BookStore Database
-    book_store = BookStore(database_file, table)
+    book_store = BookStore(database_file, table_records)
 
     while True:
         try:
