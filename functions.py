@@ -26,12 +26,12 @@ def get_book_info():
         if count == 3:
             count = 0
             raise ValueError(
-                "Aborting...you must enter 'yes' or 'no' if you have the \
-id of the book"             
+                "Aborting...you must enter 'yes' or 'no' if you have the id "
+                "of the book"             
             )
         print(
-            "\nPlease try again. Enter 'yes' or 'no' if you \
-have the id of the book"
+            "\nPlease try again. Enter 'yes' or 'no' if you have the id of "
+            "the book"
         )
         ans = input(
             "\nDo you have the id of the book? 'yes' or 'no': "
@@ -52,9 +52,9 @@ have the id of the book"
                     "Aborting...book id must be whole number greater than 0"
                 )
             print(
-                "\nBook id must be whole number greater than zero. \
-Please try again."      
-)
+                "\nBook id must be whole number greater than zero. "
+                "Please try again."      
+            )
             book_info["id"] = input("\nEnter the id of the book: ").strip()
 
         # The database is expecting an integer
@@ -164,8 +164,8 @@ def get_book():
                 "Aborting...quantity must be whole number greater than 0"
             )
         print(
-            "\nQuantity must be whole number greater than zero. \
-Please try again."      
+            "\nQuantity must be whole number greater than zero. "
+            "Please try again."      
         )
         user_input_qty = input(
             "\nEnter the quantiy of the book: "
@@ -188,8 +188,7 @@ def get_book_update_info(book_info):
     count = 0  # The number of times user enters an invalid input
 
     book_info["field"] = input(
-        "\nWhat field do you want to update? 'Title', 'Author' or \
-'Quantity': "
+        "\nWhat field do you want to update? 'Title', 'Author' or 'Quantity': "
     ).casefold().strip()
 
     # User has 3 attempts to provide correct input of field to update
@@ -200,15 +199,15 @@ def get_book_update_info(book_info):
         if count == 3:
             count = 0
             raise ValueError(
-                "Aborting...you must enter 'Title', 'Author' or 'Quantity' to \
-update"
+                "Aborting...you must enter 'Title', 'Author' or 'Quantity' to "
+                "update"
             )
         print(
             "\nPlease try again. You must enter a valid field to update"
         )
         book_info["field"] = input(
-            "\nWhat field do you want to update? 'Title', 'Author' or \
-'Quantity': "
+            "\nWhat field do you want to update? "
+            "'Title', 'Author' or 'Quantity': "
         ).casefold().strip()
 
 
@@ -217,8 +216,8 @@ update"
 
         # User adds to, subtracts from  or sets the quantity of the book
         book_info["action"] = input(
-            "\nDo you want to add to or subtract from the quantity or set to \
-a new quantity? Enter 'add' or 'sub' or 'set': "
+            "\nDo you want to add to or subtract from the quantity or set to "
+            "a new quantity? Enter 'add' or 'sub' or 'set': "
         ).casefold().strip()
 
         # User has 3 attempts to provide correct input of 'add' or 'sub'
@@ -228,16 +227,16 @@ a new quantity? Enter 'add' or 'sub' or 'set': "
             if count == 3:
                 count = 0
                 raise ValueError(
-                    "Aborting...you must enter 'add' or 'sub' or 'set' to \
-update the quantity"
+                    "Aborting...you must enter 'add' or 'sub' or 'set' "
+                    "to update the quantity"
                 )
             print(
-                "\nPlease try again. You must enter 'add' or 'sub' or 'set' \
-to update the quantity"
+                "\nPlease try again. You must enter 'add' or 'sub' or 'set' "
+                "to update the quantity"
             )
             book_info["action"] = input(
-                "\nDo you want to add to or subtract from the quantity or set \
-to a new quantity? Enter 'add' or 'sub' or 'set': "
+                "\nDo you want to add to or subtract from the quantity "
+                "or set to a new quantity? Enter 'add' or 'sub' or 'set': "
             ).casefold().strip()
                 
         count = 0  # Reset
@@ -256,8 +255,8 @@ to a new quantity? Enter 'add' or 'sub' or 'set': "
                     "Aborting...quantity must be whole number greater than 0"
                 )
             print(
-                "\nQuantity must be whole number greater than zero. Please \
-try again."      
+                "\nQuantity must be whole number greater than zero. "
+                "Please try again."      
             )
             book_info["qty"] = input(
                 "\nEnter the quantiy of the book: "
@@ -344,8 +343,8 @@ def get_book_search_info():
         if count == 3:
             count = 0
             raise ValueError(
-                "Aborting...you must say if you have the id or title or \
-author or both of the book"             
+                "Aborting...you must say if you have the id or title "
+                "or author or both of the book"             
             )
         print(
             "\nPlease try again."
@@ -373,9 +372,9 @@ author or both of the book"
                     "Aborting...book id must be whole number greater than 0"
                 )
             print(
-                "\nBook id must be whole number greater than zero. \
-Please try again."      
-)
+                "\nBook id must be whole number greater than zero. "
+                "Please try again."      
+            )
             book_info["id"] = input("\nEnter the id of the book: ").strip()
 
         # The database is expecting an integer
@@ -468,8 +467,8 @@ Please try again."
         )
     else:
         raise Exception(
-            "Sorry we can't proceed. You need to have the id or title \
-or author or both of the book"
+            "Sorry we can't proceed. You need to have the id or title "
+            "or author or both of the book"
         )  
 
     return book_info

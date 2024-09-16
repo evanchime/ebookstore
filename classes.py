@@ -158,9 +158,10 @@ class BookStore():
                             qty = book_info["qty"]  
                         if qty < 0:  # Book quantity can't be negative
                             raise DataError(
-                                f"You can't perform this operation. You only \
-have {record[3]} of this book in stock, but you want to reduce the stock by \
-{book_info["qty"]} "
+                                "You can't perform this operation. You only "
+                                f"have {record[3]} of this book in stock, "
+                                "but you want to reduce the stock by "
+                                f"{book_info["qty"]} "
                             )
                         self.cursor.execute(
                             '''UPDATE book SET qty = ? 
@@ -211,9 +212,10 @@ have {record[3]} of this book in stock, but you want to reduce the stock by \
                             qty = book_info["qty"]  
                         if qty < 0:  # Book quantity can't be negative
                             raise DataError(
-                                f"You can't perform this operation. You only \
-have {record[3]} of this book in stock, but you want to reduce the stock by \
-{book_info["qty"]}"
+                                "You can't perform this operation. You only "
+                                f"have {record[3]} of this book in stock, "
+                                "but you want to reduce the stock by "
+                                f"{book_info["qty"]}"
                             )
                         self.cursor.execute(
                             '''UPDATE book SET qty = ? 
@@ -261,8 +263,9 @@ have {record[3]} of this book in stock, but you want to reduce the stock by \
         except DataError as e:
             self.db.rollback()
             raise DataError(
-                f"You can't perform this operation. You only have {record[3]} \
-of this book in stock, but you want to reduce the stock by {book_info["qty"]}"
+                f"You can't perform this operation. You only have {record[3]} "
+                "of this book in stock, but you want to reduce the stock by "
+                f"{book_info["qty"]}"
             ) from e
         except DatabaseError as e:
             self.db.rollback()  # Rollback any changes if error
@@ -380,6 +383,6 @@ of this book in stock, but you want to reduce the stock by {book_info["qty"]}"
         except Exception as e:
             self.db.rollback()  # Rollback any changes if error
             raise Exception(
-                "Sorry we can't proceed. You need to have the id or title or \
-author or both of the book"
+                "Sorry we can't proceed. You need to have the id or title or "
+                "author or both of the book" 
             ) from e
