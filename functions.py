@@ -475,18 +475,6 @@ or author or both of the book"
     return book_info
 
 
-def exit_or_return(book_store):
-    '''Exit the application or return to the main menu. The user can 
-    press enter to return to the main menu or 'x' to exit the 
-    application
-    '''
-    user_input = input(
-        "\nPress enter to return to the main menu or 'x' to exit: "
-    ).casefold().strip()
-    if user_input == 'x':
-        exit_utility(book_store)
-
-
 def exit_utility(book_store):
     '''Close the database connection. Print a goodbye message. Exit 
     the application. 
@@ -494,3 +482,10 @@ def exit_utility(book_store):
     book_store.db.close()
     print("\nGoodbye!!!")
     exit()
+
+
+def return_to_menu ():
+    '''Return to the main menu.'''
+    user_input = input(
+        "\nPress enter to return to the main menu: "
+    )

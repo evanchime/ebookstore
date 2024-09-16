@@ -23,7 +23,7 @@ import os
 import sys
 from classes import BookStore
 from functions import get_book, get_book_info, get_book_update_info, \
-    get_book_search_info, exit_or_return, exit_utility
+    get_book_search_info, return_to_menu, exit_utility
 
 if len(sys.argv) < 2:
     print(
@@ -99,7 +99,7 @@ while True:
                 
                 # Ask the user if they want to exit or return to the
                 #  main menu
-                exit_or_return(book_store)
+                return_to_menu()
             except ValueError as e:
                 raise e
             except DatabaseError as e:
@@ -117,7 +117,7 @@ while True:
 
                 # Ask the user if they want to exit or return to the
                 #  main menu
-                exit_or_return(book_store)
+                return_to_menu()
             except ValueError as e:
                 raise e
             except DatabaseError as e:
@@ -132,7 +132,7 @@ while True:
                 
                 # Ask the user if they want to exit or return to the
                 #  main menu
-                exit_or_return(book_store)
+                return_to_menu()
             except ValueError as e:
                 raise e
             except DatabaseError as e:
@@ -148,7 +148,7 @@ while True:
                 
                 # Ask the user if they want to exit or return to the
                 #  main menu
-                exit_or_return(book_store)
+                return_to_menu()
             except ValueError as e:
                 raise e
             except DatabaseError as e:
@@ -158,13 +158,13 @@ while True:
             exit_utility(book_store) 
         else:
             print("\nInvalid option. Please select a valid option.")
-            exit_or_return(book_store)
+            return_to_menu()
     except ValueError as e:
         print('\n', e, sep='')
-        exit_or_return(book_store)
+        return_to_menu()
     except DatabaseError as e:
         print('\n', e, sep='')
-        exit_or_return(book_store)
+        return_to_menu()
     except Exception as e:
         print('\n', e, sep='')
-        exit_or_return(book_store)
+        return_to_menu()
