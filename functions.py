@@ -77,7 +77,8 @@ def get_book_info():
                 "\nEnter the title of the book: "
             ).strip()
 
-        book_info["title"] = re.sub(  # Ensure no excess space in title
+        # Ensure no excess space in title
+        book_info["title"] = re.sub(  
             r" +", " ", book_info["title"]
         )
 
@@ -171,8 +172,6 @@ def get_book():
             "\nEnter the quantiy of the book: "
         ).strip()
 
-    # Create and return a book object from the user inputs. The database
-    # is expecting an integer quantity
     return Book(user_input_title, user_input_author, int(user_input_qty))
 
 
@@ -397,7 +396,8 @@ def get_book_search_info():
                 "\nEnter the title of the book: "
             ).strip()
 
-        book_info["title"] = re.sub(  # Ensure no excess space in title
+        # Ensure no excess space in title
+        book_info["title"] = re.sub(  
             r" +", " ", book_info["title"]
         )
     elif menu_2 == '3':
@@ -440,7 +440,8 @@ def get_book_search_info():
                 "\nEnter the title of the book: "
             ).strip()
 
-        book_info["title"] = re.sub(  # Ensure no excess space in title
+        # Ensure no excess space in title
+        book_info["title"] = re.sub(  
             r" +", " ", book_info["title"]
         )
 

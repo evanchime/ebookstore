@@ -22,14 +22,14 @@ class BookStore():
     the database file and an optional table as arguments'''
     def __init__(self, database_file, table_records=None):
         try:
-            # Connect to sqlite
             self.db = sqlite3.connect(database_file)
-            self.db.create_collation(  # Caseless comparison
+            # Caseless comparison
+            self.db.create_collation(  
                 "UNICODE_NOCASE", BookStore.unicode_nocase_collation
             )
         except DatabaseError as e:
-            self.db.rollback()  # Rollback any changes if error
-            self.db.close()  # Close the database connection
+            self.db.rollback() 
+            self.db.close()
             raise DatabaseError(
                 "Error while setting up the database"
             ) from e
@@ -39,9 +39,8 @@ class BookStore():
             ) from e
           
         try:    
-            self.cursor = self.db.cursor()  # Get a cursor object
+            self.cursor = self.db.cursor()
 
-            # Create the table if it doesn't exist
             self.cursor.execute(
                 '''CREATE TABLE IF NOT EXISTS book(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,27 +51,26 @@ class BookStore():
                 );
                 '''
             )
-            self.db.commit()  # Changes were successful so commit
+            self.db.commit()  
         except DatabaseError as e:
-            self.db.rollback()  # Rollback any changes if error
+            self.db.rollback()
             raise DatabaseError(
                 "Error while creating a table in the database"
             ) from e
 
         try:
-            # Insert table records into database if table records is 
-            # provided
+            # Insert predefined table records into database if provided
             if table_records is not None:
-                # If records exist in the database, ignore them
+                # If records exist in the database, don't throw an error
                 self.cursor.executemany(
                     '''INSERT OR IGNORE INTO book (id, title, author, qty) 
                     VALUES (?, ?, ?, ?)
                     ''', 
                     table_records
                 )
-                self.db.commit()  # Changes were successful so commit
+                self.db.commit()
         except DatabaseError as e:
-            self.db.rollback()  # Rollback any changes if error
+            self.db.rollback()
             raise DatabaseError(
                 "Error while inserting to a table in the database"
             ) from e      
@@ -113,12 +111,12 @@ class BookStore():
                     ''', 
                     (book.title, book.author, book.qty)
                 )
-                self.db.commit()  # Changes were successful so commit
+                self.db.commit()
                 print(f"\nBook entered with id: {self.cursor.lastrowid}")
             else:
                 print("\nBook already exists")
         except DatabaseError as e:
-            self.db.rollback()  # Rollback any changes if error
+            self.db.rollback()
             raise DatabaseError(
                 "Error while inserting a book to the database"
             ) from e 
@@ -135,7 +133,9 @@ class BookStore():
         raises a DatabaseError
         '''
         try:
-            book_found = False  # Inform user if book not found
+             # Inform user if book not found
+            book_found = False 
+            
             if "id" in book_info:  # If user provides the book id
                 self.cursor.execute(
                     '''SELECT * FROM book 
@@ -143,8 +143,8 @@ class BookStore():
                     ''', 
                     (book_info["id"], )
                 )
-                record = self.cursor.fetchone()
-                if record:  # If book exists
+                record = self.cursor.fetchone() 
+                if record:  # If book exists 
                     book_found = True
                     # If user wants to update quantity
                     if book_info["field"] == "quantity":
@@ -180,16 +180,14 @@ class BookStore():
                             ''', 
                             (book_info["new_title"], book_info["id"])
                         )
-                    # If user wants to update author
-                    else:
+                    else:  # If user wants to update author
                         self.cursor.execute(
                             '''UPDATE book SET author = ? 
                             WHERE id = ?
                             ''', 
                             (book_info["new_author"], book_info["id"])
-                        )
-            # If user provides the book author and title        
-            else:
+                        )       
+            else:  # If user provides the book author and title 
                 self.cursor.execute(
                     '''SELECT * FROM book 
                     WHERE author = ? 
@@ -241,8 +239,7 @@ class BookStore():
                                 book_info["title"]
                             )
                         )
-                    # If user wants to update author
-                    else:
+                    else:  # If user wants to update author
                         self.cursor.execute(
                             '''UPDATE book SET author = ? 
                             WHERE author = ? 
@@ -256,7 +253,7 @@ class BookStore():
                         )
                     
             if book_found:
-                self.db.commit()  # Changes were successful so commit
+                self.db.commit()
                 print("\nBook updated successfully")
             else:
                 print("\nBook not found")
@@ -268,7 +265,7 @@ class BookStore():
                 f"{book_info["qty"]}"
             ) from e
         except DatabaseError as e:
-            self.db.rollback()  # Rollback any changes if error
+            self.db.rollback()
             raise DatabaseError(
                 "Error while updating the book in the database"
             ) from e 
@@ -282,15 +279,17 @@ class BookStore():
         there is an error, it raises a DatabaseError.
         '''
         try:
-            book_found = False  # Inform user if book not found
-            if "id" in book_info:    # If user provides the book id
+            # Inform user if book not found
+            book_found = False
+
+            if "id" in book_info:  # If user provides the book id
                 self.cursor.execute(
                     '''SELECT * FROM book 
                     WHERE id = ?
                     ''', 
                     (book_info["id"], )
                 )
-                if self.cursor.fetchone():  # If book exists
+                if self.cursor.fetchone():  # If book exists 
                     book_found = True
                     self.cursor.execute(
                         '''DELETE FROM book 
@@ -298,8 +297,7 @@ class BookStore():
                         ''', 
                         (book_info["id"], )
                     )
-            # If user provides the book author and title
-            else:
+            else:  # If user provides the book author and title
                 self.cursor.execute(
                     '''SELECT * FROM book 
                     WHERE author = ? 
@@ -317,12 +315,12 @@ class BookStore():
                         (book_info["author"], book_info["title"])
                     )
             if book_found:
-                self.db.commit()  # Changes were successful so commit
+                self.db.commit()
                 print("\nBook deleted successfully")
             else:
                 print("\nBook not found")
         except DatabaseError as e:
-            self.db.rollback()  # Rollback any changes if error
+            self.db.rollback()
             raise DatabaseError(
                 "Error while deleting the book in the database"
             ) from e  
@@ -337,8 +335,8 @@ class BookStore():
         found. If there is an error, it raises a DatabaseError.
         '''
         try:
+            # Search for books if user knows the title and author
             if "title" in book_info and "author" in book_info:
-                # Search for books if user knows the title and author
                 self.cursor.execute(
                     '''SELECT * FROM book 
                     WHERE title = ? 
@@ -370,18 +368,19 @@ class BookStore():
                 )
             
             records = self.cursor.fetchall() 
+
             if not records:  # If book doesn't exist
                 print("\nBook not found")
             else:  # Print the book details in a tabular format
                 headers = ["ID", "Title", "Author", "Quantity"]
                 print('\n', tabulate(records, headers))
         except DatabaseError as e:
-            self.db.rollback()  # Rollback any changes if error
+            self.db.rollback()
             raise DatabaseError(
                 "Error while searching for the book in the database"
             ) from e
         except Exception as e:
-            self.db.rollback()  # Rollback any changes if error
+            self.db.rollback()
             raise Exception(
                 "Sorry we can't proceed. You need to have the id or title or "
                 "author or both of the book" 

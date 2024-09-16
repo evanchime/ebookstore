@@ -46,12 +46,12 @@ except PermissionError:
     )
     sys.exit(1)
 
-table_records = []  # Create an empty list to store the table records
+# Create an empty list to store the table records
+table_records = []  
 
-if table_records_file:  # Check if the table file is provided
+if table_records_file:  # If predefined table records file is provided
 
     try:
-        # Read the predefined records from a file into list table
         with open(table_records_file, 'r') as file:
             for index, line in enumerate(file):
                 if index == 0:
@@ -67,7 +67,6 @@ if table_records_file:  # Check if the table file is provided
         )
         sys.exit(1)
 
-# Create an instance of the BookStore Database
 try:
     book_store = BookStore(database_file, table_records)
 except DatabaseError as e:
@@ -97,8 +96,7 @@ while True:
                 # Insert the book details into the database
                 book_store.insert_book(book)
                 
-                # Ask the user if they want to exit or return to the
-                #  main menu
+                # Return to the main menu
                 return_to_menu()
             except ValueError as e:
                 raise e
@@ -115,8 +113,7 @@ while True:
                 # Update the book details in the database
                 book_store.update_book(book_update_info)
 
-                # Ask the user if they want to exit or return to the
-                #  main menu
+                # Return to main menu
                 return_to_menu()
             except ValueError as e:
                 raise e
@@ -130,8 +127,7 @@ while True:
                 # Delete the book details from the database
                 book_store.delete_book(book_info)
                 
-                # Ask the user if they want to exit or return to the
-                #  main menu
+                # Return to main menu
                 return_to_menu()
             except ValueError as e:
                 raise e
@@ -140,14 +136,12 @@ while True:
         elif menu_1 == '4':
             try:
                 # Get the book details from the user
-                # book_info = get_book_info()
                 book_info = get_book_search_info()  
 
                 # Search for the book details in the database
                 book_store.search_books(book_info)
                 
-                # Ask the user if they want to exit or return to the
-                #  main menu
+                # Return to main menu
                 return_to_menu()
             except ValueError as e:
                 raise e
