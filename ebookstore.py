@@ -157,8 +157,7 @@ while True:
             # Exit the application
             exit_utility(book_store) 
         else:
-            print("\nInvalid option. Please select a valid option.")
-            return_to_menu()
+            print("\nInvalid option. Please try again.")
     except ValueError as e:
         print('\n', e, sep='')
         return_to_menu()
