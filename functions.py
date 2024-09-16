@@ -467,7 +467,7 @@ def get_book_search_info():
             r" +", " ", book_info["author"]
         )
     else:
-        raise Exception(
+        raise ValueError(
             "Sorry we can't proceed. You need to have the id or title "
             "or author or both of the book"
         )  

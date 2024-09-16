@@ -158,6 +158,3 @@ while True:
     except DatabaseError as e:
         print('\n', e, sep='')
         return_to_menu()
-    except Exception as e:
-        print('\n', e, sep='')
-        return_to_menu()

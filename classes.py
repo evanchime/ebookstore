@@ -379,9 +379,3 @@ class BookStore():
             raise DatabaseError(
                 "Error while searching for the book in the database"
             ) from e
-        except Exception as e:
-            self.db.rollback()
-            raise Exception(
-                "Sorry we can't proceed. You need to have the id or title or "
-                "author or both of the book" 
-            ) from e
