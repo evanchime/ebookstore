@@ -485,6 +485,4 @@ def exit_utility(book_store):
 
 def return_to_menu ():
     '''Return to the main menu.'''
-    user_input = input(
-        "\nPress enter to return to the main menu: "
-    )
+    input("\nPress enter to return to the main menu: ")
