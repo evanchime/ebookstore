@@ -20,7 +20,7 @@ class Book():
 class BookStore():
     '''A BookStore class to manage the book store inventory. It takes
     the database file and an optional table as arguments'''
-    def __init__(self, database_file, table=None):
+    def __init__(self, database_file, table_records=None):
         try:
             # Connect to sqlite
             self.db = sqlite3.connect(database_file)
@@ -29,6 +29,7 @@ class BookStore():
             )
         except DatabaseError as e:
             self.db.rollback()  # Rollback any changes if error
+            self.db.close()  # Close the database connection
             raise DatabaseError(
                 "Error while setting up the database"
             ) from e
@@ -59,14 +60,15 @@ class BookStore():
             ) from e
 
         try:
-            # Insert table records into database if table is provided
-            if table is not None:
+            # Insert table records into database if table records is 
+            # provided
+            if table_records is not None:
                 # If records exist in the database, ignore them
                 self.cursor.executemany(
                     '''INSERT OR IGNORE INTO book (id, title, author, qty) 
                     VALUES (?, ?, ?, ?)
                     ''', 
-                    table
+                    table_records
                 )
                 self.db.commit()  # Changes were successful so commit
         except DatabaseError as e:
