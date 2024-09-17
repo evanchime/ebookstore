@@ -86,6 +86,141 @@ class BookStore():
         if a.casefold() < b.casefold():
             return -1
         return 1
+    
+
+    @staticmethod
+    def get_update_qty_utility(book_info, record):
+        '''Utility function to get the updated quantity of a book. It
+        takes a dictionary and a tuple as arguments. The dictionary
+        contains the action to perform on the quantity and the quantity
+        to update. The tuple contains the book details. It returns the
+        updated quantity. If the quantity is negative, it raises a
+        DataError
+        '''
+        if book_info["action"] == "sub":
+            # Subtract from database quantity
+            qty = record[3] - book_info["qty"]
+        elif book_info["action"] == "add":
+            # Add to database quantity
+            qty = record[3] + book_info["qty"]  
+        else:  # Set database quantity to a specific value
+            qty = book_info["qty"]  
+        if qty < 0:  # Book quantity can't be negative
+            raise DataError(
+                "You can't perform this operation. You only "
+                f"have {record[3]} of this book in stock, "
+                "but you want to reduce the stock by "
+                f"{book_info["qty"]}"
+            )
+        return qty
+
+
+    def update_qty_utility(self, qty, book_info):
+        '''Utility function to update the quantity of a book. It takes
+        the updated quantity and a dictionary as arguments. The updated
+        quantity is the quantity to update. The dictionary contains the
+        book id, title, author, and the quantity to update. It updates
+        the quantity of the book in the database
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                '''UPDATE book SET qty = ? 
+                WHERE id = ? 
+                ''', 
+                (
+                    qty, 
+                    book_info["id"]
+                )
+            )
+        else:
+            '''UPDATE book SET qty = ? 
+            WHERE author = ? 
+            AND title = ?
+            ''', 
+            (
+                qty, 
+                book_info["author"], 
+                book_info["title"]
+            )
+
+
+    def update_title_utility(self, book_info):
+        '''Utility function to update the title of a book. It takes a
+        dictionary as an argument. The dictionary contains the book id,
+        title, author, and the new title. It updates the title of the
+        book in the database
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                '''UPDATE book SET title = ? 
+                WHERE id = ?
+                ''', 
+                (book_info["new_title"], book_info["id"])
+            )
+        else:
+            self.cursor.execute(
+                '''UPDATE book SET title = ? 
+                WHERE author = ? 
+                AND title = ?
+                ''', 
+                (
+                    book_info["new_title"], 
+                    book_info["author"], 
+                    book_info["title"]
+                )
+            )
+
+
+    def update_author_utility(self, book_info):
+        '''Utility function to update the author of a book. It takes a
+        dictionary as an argument. The dictionary contains the book id,
+        title, author, and the new author. It updates the author of the
+        book in the database
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                '''UPDATE book SET author = ? 
+                WHERE id = ?
+                ''', 
+                (book_info["new_author"], book_info["id"])
+            )
+        else:
+            self.cursor.execute(
+                '''UPDATE book SET author = ? 
+                WHERE author = ? 
+                AND title = ?
+                ''', 
+                (
+                    book_info["new_author"], 
+                    book_info["author"], 
+                    book_info["title"]
+                )
+            )
+
+
+    def find_book(self, book_info):
+        '''Find a book in the database. It takes a dictionary as an
+        argument. The dictionary contains the book id, title, and
+        author. If the book is found, it returns the book details. If
+        the book is not found, it returns None. Book has to exist in
+        order to be updated
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                '''SELECT * FROM book 
+                WHERE id = ?
+                ''', 
+                (book_info["id"], )
+            )
+        else:
+            self.cursor.execute(
+                '''SELECT * FROM book 
+                WHERE author = ? 
+                AND title = ?
+                ''', 
+                (book_info["author"], book_info["title"])
+            )
+        return self.cursor.fetchone()
 
 
     def insert_book(self, book):
@@ -133,126 +268,32 @@ class BookStore():
         raises a DatabaseError
         '''
         try:
-             # Inform user if book not found
-            book_found = False 
-            
             if "id" in book_info:  # If user provides the book id
-                self.cursor.execute(
-                    '''SELECT * FROM book 
-                    WHERE id = ?
-                    ''', 
-                    (book_info["id"], )
-                )
-                record = self.cursor.fetchone() 
+                record = self.find_book(book_info) 
                 if record:  # If book exists 
-                    book_found = True
                     # If user wants to update quantity
                     if book_info["field"] == "quantity":
-                        if book_info["action"] == "sub":
-                            # Subtract from quantity
-                            qty = record[3] - book_info["qty"]
-                        elif book_info["action"] == "add":
-                            # Add to quantity
-                            qty = record[3] + book_info["qty"]  
-                        else:  # Set quantity to a specific value
-                            qty = book_info["qty"]  
-                        if qty < 0:  # Book quantity can't be negative
-                            raise DataError(
-                                "You can't perform this operation. You only "
-                                f"have {record[3]} of this book in stock, "
-                                "but you want to reduce the stock by "
-                                f"{book_info["qty"]} "
-                            )
-                        self.cursor.execute(
-                            '''UPDATE book SET qty = ? 
-                            WHERE id = ? 
-                            ''', 
-                            (
-                                qty, 
-                                book_info["id"]
-                            )
-                        )
+                        qty = self.get_update_qty_utility(book_info, record)
+                        self.update_qty_utility(qty, book_info)
                     # If user wants to update title
                     elif book_info["field"] == "title":
-                        self.cursor.execute(
-                            '''UPDATE book SET title = ? 
-                            WHERE id = ?
-                            ''', 
-                            (book_info["new_title"], book_info["id"])
-                        )
+                        self.update_title_utility(book_info)
                     else:  # If user wants to update author
-                        self.cursor.execute(
-                            '''UPDATE book SET author = ? 
-                            WHERE id = ?
-                            ''', 
-                            (book_info["new_author"], book_info["id"])
-                        )       
+                        self.update_author_utility(book_info)       
             else:  # If user provides the book author and title 
-                self.cursor.execute(
-                    '''SELECT * FROM book 
-                    WHERE author = ? 
-                    AND title = ?
-                    ''', 
-                    (book_info["author"], book_info["title"])
-                )
-                record = self.cursor.fetchone()
+                record = self.find_book(book_info)
                 if record:  # If book exists
-                    book_found = True
                     # If user wants to update quantity
                     if book_info["field"] == "quantity":
-                        if book_info["action"] == "sub":
-                            # Subtract from quantity
-                            qty = record[3] - book_info["qty"]
-                        elif book_info["action"] == "add":
-                            # Add to quantity
-                            qty = record[3] + book_info["qty"]  
-                        else:  # Set quantity to a specific value
-                            qty = book_info["qty"]  
-                        if qty < 0:  # Book quantity can't be negative
-                            raise DataError(
-                                "You can't perform this operation. You only "
-                                f"have {record[3]} of this book in stock, "
-                                "but you want to reduce the stock by "
-                                f"{book_info["qty"]}"
-                            )
-                        self.cursor.execute(
-                            '''UPDATE book SET qty = ? 
-                            WHERE author = ? 
-                            AND title = ?
-                            ''', 
-                            (
-                                qty, 
-                                book_info["author"], 
-                                book_info["title"]
-                            )
-                        )
+                        qty = self.get_update_qty_utility(book_info, record)
+                        self.update_qty_utility(qty, book_info)
                     # If user wants to update title
                     elif book_info["field"] == "title":
-                        self.cursor.execute(
-                            '''UPDATE book SET title = ? 
-                            WHERE author = ? 
-                            AND title = ?
-                            ''', 
-                            (
-                                book_info["new_title"], 
-                                book_info["author"], 
-                                book_info["title"]
-                            )
-                        )
+                        self.update_title_utility(book_info)
                     else:  # If user wants to update author
-                        self.cursor.execute(
-                            '''UPDATE book SET author = ? 
-                            WHERE author = ? 
-                            AND title = ?
-                            ''', 
-                            (
-                                book_info["new_author"], 
-                                book_info["author"], 
-                                book_info["title"]
-                            )
-                        )
+                        self.update_author_utility(book_info)
                     
-            if book_found:
+            if record:
                 self.db.commit()
                 print("\nBook updated successfully")
             else:
