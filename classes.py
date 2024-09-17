@@ -133,14 +133,15 @@ class BookStore():
                 )
             )
         else:
-            '''UPDATE book SET qty = ? 
-            WHERE author = ? 
-            AND title = ?
-            ''', 
-            (
-                qty, 
-                book_info["author"], 
-                book_info["title"]
+            self.cursor.execute('''UPDATE book SET qty = ? 
+                WHERE author = ? 
+                AND title = ?
+                ''', 
+                (
+                    qty, 
+                    book_info["author"], 
+                    book_info["title"]
+                )
             )
 
 
