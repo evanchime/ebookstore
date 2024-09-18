@@ -71,6 +71,7 @@ def get_book_title_utility():
     provide the title of the book.
     '''
     count = 0  # The number of times user enters an invalid input
+
     title = input("\nEnter the title of the book: ").strip()
 
     # Title can not be empty after 3 attempts
@@ -93,6 +94,7 @@ def get_book_author_utility():
     provide the author of the book.
     '''
     count = 0  # Reset
+
     author = input("\nEnter the author of the book: ").strip()
 
     # Author cannot be empty after 3 attempts
@@ -265,162 +267,26 @@ def get_book_update_info(book_info):
     return book_info
 
 
-def get_book_search_info():
-    '''Get book information from the user. The user can provide the id 
-    of the book or the title or the author or both title and author of 
-    the book. If the user provides the id of the book, or the title or 
-    the author or both the function will return the values respectively 
-    in a dictionary.
-    '''
+def get_book_search_query():
+    '''Get book search query from the user.'''
     count = 0  # The number of times user enters an invalid input
 
-    book_info = {}  # Dictionary to store and return book information
-
-    menu_2 = input('''\nDo you have:
-1. The id
-2. The title
-3. The author name
-4. The title and author name
-5. None of the above
-: ''').strip()
+    search_query = input("Enter the search query: ").strip()
     
     # User has 3 attempts to provide correct input
-    while menu_2 not in ['1', '2', '3', '4', '5']:
+    while not search_query:
         count += 1
         if count == 3:
             count = 0
             raise ValueError(
-                "Aborting...you must say if you have the id or title "
-                "or author or both of the book"             
+                "Aborting...you must enter a search query"
             )
         print(
             "\nPlease try again."
         )
-        menu_2 = input('''\nDo you have:
-1. The id
-2. The title
-3. The author name
-4. The title and author name
-5. None of the above
-: ''').strip()
-    
-    if menu_2 == '1':
-        count = 0
+        search_query = input("Enter the search query: ").strip()
 
-        book_info["id"] = input("\nEnter the id of the book: ").strip()
-
-        # The book id should be a whole number greater than zero in no
-        # more than 3 attempts
-        while not re.fullmatch(r"[1-9][0-9]*", book_info["id"]):
-            count += 1
-            if count == 3:
-                count = 0
-                raise ValueError(
-                    "Aborting...book id must be whole number greater than 0"
-                )
-            print(
-                "\nBook id must be whole number greater than zero. "
-                "Please try again."      
-            )
-            book_info["id"] = input("\nEnter the id of the book: ").strip()
-
-        # The database is expecting an integer
-        book_info["id"] = int(book_info["id"]) 
-    elif menu_2 == '2':
-        count = 0
-
-        book_info["title"] = input(
-            "\nEnter the title of the book: "
-        ).strip()
-
-        # The title can not be empty after 3 attempts
-        while not book_info["title"]:
-            count += 1
-            if count == 3:
-                count = 0
-                raise ValueError("Aborting...title cannot be empty")
-            print("\nTitle cannot be empty. Please try again.")
-            book_info["title"] = input(
-                "\nEnter the title of the book: "
-            ).strip()
-
-        # Ensure no excess space in title
-        book_info["title"] = re.sub(  
-            r" +", " ", book_info["title"]
-        )
-    elif menu_2 == '3':
-        count = 0 
-
-        book_info["author"] = input(
-            "\nEnter the author of the book: "
-        ).strip()
-
-        # Author cannot be empty after 3 attempts
-        while not book_info["author"]:
-            count += 1
-            if count == 3:
-                count = 0
-                raise ValueError("Aborting...author cannot be empty")
-            print("\nAuthor cannot be empty. Please try again.")
-            book_info["author"] = input(
-                "\nEnter the author of the book: "
-            ).strip()
-
-         # Ensure no excess space in author
-        book_info["author"] = re.sub(
-            r" +", " ", book_info["author"]
-        )
-    elif menu_2 == '4':
-        count = 0
-
-        book_info["title"] = input(
-            "\nEnter the title of the book: "
-        ).strip()
-
-        # The title can not be empty after 3 attempts
-        while not book_info["title"]:
-            count += 1
-            if count == 3:
-                count = 0
-                raise ValueError("Aborting...title cannot be empty")
-            print("\nTitle cannot be empty. Please try again.")
-            book_info["title"] = input(
-                "\nEnter the title of the book: "
-            ).strip()
-
-        # Ensure no excess space in title
-        book_info["title"] = re.sub(  
-            r" +", " ", book_info["title"]
-        )
-
-        count = 0
-
-        book_info["author"] = input(
-            "\nEnter the author of the book: "
-        ).strip()
-
-        # Author cannot be empty after 3 attempts
-        while not book_info["author"]:
-            count += 1
-            if count == 3:
-                count = 0
-                raise ValueError("Aborting...author cannot be empty")
-            print("\nAuthor cannot be empty. Please try again.")
-            book_info["author"] = input(
-                "\nEnter the author of the book: "
-            ).strip()
-
-         # Ensure no excess space in author
-        book_info["author"] = re.sub(
-            r" +", " ", book_info["author"]
-        )
-    else:
-        raise ValueError(
-            "Sorry we can't proceed. You need to have the id or title "
-            "or author or both of the book"
-        )  
-
-    return book_info
+    return re.sub(r" +", " ", search_query)
 
 
 def exit_utility(book_store):

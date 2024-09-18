@@ -23,7 +23,7 @@ import os
 import sys
 from classes_copy import BookStore
 from functions_copy import get_book, get_book_info, get_book_update_info, \
-    get_book_search_info, return_to_menu, exit_utility
+    get_book_search_query, return_to_menu, exit_utility
 
 if len(sys.argv) < 2:
     print(
@@ -138,10 +138,10 @@ while True:
         elif menu_1 == '4':
             try:
                 # Get the book details from the user
-                book_info = get_book_search_info()  
+                search_query = get_book_search_query()  
 
                 # Search for the book details in the database
-                book_store.search_books(book_info)
+                book_store.search_books(search_query)
                 
                 # Return to main menu
                 return_to_menu()

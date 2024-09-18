@@ -400,47 +400,26 @@ class BookStore():
                 "deleting the book in the database"
             ) from e  
 
-                        
-    def search_books(self, book_info):
-        '''Search for a book in the database. It takes a dictionary as
-        an argument. The dictionary contains the book id, title, and
-        author. If the book is found, it prints the book details and 
-        optionally that of other books that have a close match. If the 
-        book is not found, it prints a message that the book was not 
-        found. If there is an error, it raises a DatabaseError.
-        '''
+
+    def search_books(self, search_query):
+        '''Search the database against the user-provided input. If the 
+        book is found, it prints the book details and optionally that of 
+        other books that have a close match. If the book is not found, 
+        it prints a message that the book was not found. If there is an 
+        error, it raises a DatabaseError'''
         try:
-            # Search for books if user knows the title and author
-            if "title" in book_info and "author" in book_info:
-                self.cursor.execute(
-                    '''SELECT * FROM book 
-                    WHERE title = ? 
-                    AND author = ?
-                    ''', 
-                    (book_info['title'], book_info['author'])
+            self.cursor.execute(
+                '''SELECT * FROM book 
+                WHERE id LIKE ? 
+                OR title LIKE ?
+                OR author LIKE ?
+                ''', 
+                (
+                    '%' + search_query + '%', 
+                    '%' + search_query + '%', 
+                    '%' + search_query + '%', 
                 )
-            elif "id" in book_info:  # If user provides the book id
-                self.cursor.execute(
-                    '''SELECT * FROM book 
-                    WHERE id = ?
-                    ''', 
-                    (book_info["id"], )
-                )
-            # If user provides the book author only
-            elif "author" in book_info:
-                self.cursor.execute(
-                    '''SELECT * FROM book 
-                    WHERE author = ?
-                    ''', 
-                    (book_info["author"], )
-                )
-            else:  # If user provides the book title only
-                self.cursor.execute(
-                    '''SELECT * FROM book 
-                    WHERE title = ? 
-                    ''', 
-                    (book_info["title"], )
-                )
+            )
             
             records = self.cursor.fetchall() 
 
