@@ -271,7 +271,7 @@ def get_book_search_query():
     '''Get book search query from the user.'''
     count = 0  # The number of times user enters an invalid input
 
-    search_query = input("Enter the search query: ").strip()
+    search_query = input("\nEnter the search query: ").strip()
     
     # User has 3 attempts to provide correct input
     while not search_query:
@@ -284,7 +284,7 @@ def get_book_search_query():
         print(
             "\nPlease try again."
         )
-        search_query = input("Enter the search query: ").strip()
+        search_query = input("\nEnter the search query: ").strip()
 
     return re.sub(r" +", " ", search_query)
 
