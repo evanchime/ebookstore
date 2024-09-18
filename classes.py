@@ -30,12 +30,20 @@ class BookStore():
         except DatabaseError as e:
             self.db.rollback() 
             self.db.close()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DatabaseError(
-                "Error while setting up the database"
+                f"Error on line {line_no} in '{file_name}' while setting up "
+                "the database"
             ) from e
         except PermissionError as e:
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise PermissionError(
-                f"You don't have permission to create file '{database_file}'"
+                f"Error on line {line_no} in file '{file_name}'. You don't "
+                f"have permission to create file '{database_file}'"
             ) from e
           
         try:    
@@ -54,8 +62,12 @@ class BookStore():
             self.db.commit()  
         except DatabaseError as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DatabaseError(
-                "Error while creating a table in the database"
+                f"Error on line {line_no} in file '{file_name}' while "
+                "creating a table in the database"
             ) from e
 
         try:
@@ -71,8 +83,12 @@ class BookStore():
                 self.db.commit()
         except DatabaseError as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DatabaseError(
-                "Error while inserting to a table in the database"
+                f"Error on line {line_no} in file '{file_name}' while "
+                "inserting to a table in the database"
             ) from e      
 
 
@@ -253,8 +269,12 @@ class BookStore():
                 print("\nBook already exists")
         except DatabaseError as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DatabaseError(
-                "Error while inserting a book to the database"
+                f"Error on line {line_no} on file '{file_name}' while "
+                "inserting a book to the database"
             ) from e 
 
 
@@ -301,16 +321,25 @@ class BookStore():
                 print("\nBook not found")
         except DataError as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DataError(
-                f"You can't perform this operation. You only have {record[3]} "
+                f"Error on line {line_no} in file '{file_name}'. You can't "
+                f"perform this operation. You only have {record[3]} "
                 "of this book in stock, but you want to reduce the stock by "
                 f"{book_info["qty"]}"
             ) from e
         except DatabaseError as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DatabaseError(
-                "Error while updating the book in the database"
+                f"Error on line {line_no} in file '{file_name}' while "
+                "updating the book in the database"
             ) from e 
+
 
     def delete_book(self, book_info):
         '''Delete a book from the database. It takes a dictionary as 
@@ -363,8 +392,12 @@ class BookStore():
                 print("\nBook not found")
         except DatabaseError as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DatabaseError(
-                "Error while deleting the book in the database"
+                f"Error on line {line_no} in file '{file_name}' while "
+                "deleting the book in the database"
             ) from e  
 
                         
@@ -418,6 +451,10 @@ class BookStore():
                 print('\n', tabulate(records, headers))
         except DatabaseError as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise DatabaseError(
-                "Error while searching for the book in the database"
+                f"Error on line {line_no} in file '{file_name}' while "
+                "searching for the book in the database"
             ) from e

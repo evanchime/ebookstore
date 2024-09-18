@@ -17,12 +17,12 @@ Also the program will be using classes and functions in seperate files
 to be imported.
 '''
 
-from sqlite3 import DatabaseError 
+from sqlite3 import DatabaseError, DataError
 from tabulate import tabulate
 import os
 import sys
-from classes import BookStore
-from functions import get_book, get_book_info, get_book_update_info, \
+from classes_copy import BookStore
+from functions_copy import get_book, get_book_info, get_book_update_info, \
     get_book_search_info, return_to_menu, exit_utility
 
 if len(sys.argv) < 2:
@@ -70,10 +70,10 @@ if table_records_file:  # If predefined table records file is provided
 try:
     book_store = BookStore(database_file, table_records)
 except DatabaseError as e:
-    print(f'Database error: {e}')
+    print(e)
     sys.exit(1)
 except PermissionError as e:
-    print(f'Permission denied: {e}')
+    print(e)
     sys.exit(1)
 
 while True:
@@ -117,6 +117,8 @@ while True:
                 return_to_menu()
             except ValueError as e:
                 raise e
+            except DataError as e:
+                raise e
             except DatabaseError as e:
                 raise e
         elif menu_1 == '3':
@@ -153,6 +155,9 @@ while True:
         else:
             print("\nInvalid option. Please try again.")
     except ValueError as e:
+        print('\n', e, sep='')
+        return_to_menu()
+    except DataError as e:
         print('\n', e, sep='')
         return_to_menu()
     except DatabaseError as e:
