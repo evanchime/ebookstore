@@ -238,6 +238,18 @@ class BookStore():
                 (book_info["author"], book_info["title"])
             )
         return self.cursor.fetchone()
+    
+
+    def update_books_utilty(self, book_info, record):
+        # If user wants to update quantity
+        if book_info["field"] == "quantity":
+            qty = self.get_update_qty_utility(book_info, record)
+            self.update_qty_utility(qty, book_info)
+        # If user wants to update title
+        elif book_info["field"] == "title":
+            self.update_title_utility(book_info)
+        else: # If user wants to update author
+            self.update_author_utility(book_info)
 
 
     def insert_book(self, book):
@@ -292,27 +304,11 @@ class BookStore():
             if "id" in book_info:  # If user provides the book id
                 record = self.find_book(book_info) 
                 if record:  # If book exists 
-                    # If user wants to update quantity
-                    if book_info["field"] == "quantity":
-                        qty = self.get_update_qty_utility(book_info, record)
-                        self.update_qty_utility(qty, book_info)
-                    # If user wants to update title
-                    elif book_info["field"] == "title":
-                        self.update_title_utility(book_info)
-                    else:  # If user wants to update author
-                        self.update_author_utility(book_info)       
+                    self.update_books_utilty(book_info, record)       
             else:  # If user provides the book author and title 
                 record = self.find_book(book_info)
                 if record:  # If book exists
-                    # If user wants to update quantity
-                    if book_info["field"] == "quantity":
-                        qty = self.get_update_qty_utility(book_info, record)
-                        self.update_qty_utility(qty, book_info)
-                    # If user wants to update title
-                    elif book_info["field"] == "title":
-                        self.update_title_utility(book_info)
-                    else:  # If user wants to update author
-                        self.update_author_utility(book_info)
+                    self.update_books_utilty(book_info, record)
                     
             if record:
                 self.db.commit()
