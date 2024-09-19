@@ -36,7 +36,7 @@ eBookstore is a command-line application with a user-friendly interface that all
     ```
 
 ## Usage
-1. Run the main script: `python ebookstore.py database_file [predefined_table_file]`
+1. Run the main script: `python ebookstore.py database_file [predefined_table_records_file]`
 2. Follow the on-screen instructions to interact with the inventory system.
 
 ## Contributing
