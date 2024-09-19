@@ -132,7 +132,7 @@ def get_book_qty_utility():
     '''
     count = 0  # Reset
 
-    qty = input("\nEnter the quantiy of the book: ").strip()
+    qty = input("\nWhat quantity of the book: ").strip()
 
     # Quantity must be a whole number greater than zero after 3 attempts
     while not re.fullmatch(r"[1-9][0-9]*", qty):
@@ -146,7 +146,7 @@ def get_book_qty_utility():
             "\nQuantity must be whole number greater than zero. "
             "Please try again."      
         )
-        qty = input("\nEnter the quantiy of the book: ").strip()
+        qty = input("\nWhat quantity of the book: ").strip()
 
     # The database is expecting an integer
     return int(qty)
