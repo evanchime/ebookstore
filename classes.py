@@ -241,6 +241,12 @@ class BookStore():
     
 
     def update_books_utilty(self, book_info, record):
+        '''Utility function to update the book details. It takes a
+        dictionary and a tuple as arguments. The dictionary contains the
+        book id, title, author, the field to update and the new value.
+        The tuple contains the book details. It updates the book details
+        in the database
+        '''
         # If user wants to update quantity
         if book_info["field"] == "quantity":
             qty = self.get_update_qty_utility(book_info, record)
