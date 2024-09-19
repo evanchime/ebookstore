@@ -64,47 +64,61 @@ def do_you_have_book_id_utility():
     return ans
 
 
-def get_book_title_utility():
+def get_book_title_utility(new_title=None):
     '''Get the title of the book from the user. The user provides the
     title of the book. The function returns the title of the book. The
     title of the book cannot be empty. The user has 3 attempts to
-    provide the title of the book.
+    provide the title of the book. The function takes an optional
+    argument new_title. If new_title is provided, the function will
+    prompt the user to enter the new title of the book.
     '''
     count = 0  # The number of times user enters an invalid input
 
-    title = input("\nEnter the title of the book: ").strip()
+    # If the field to update is title
+    title_prompt = new_title if new_title else "title"
+
+    title = input(f"\nEnter the {title_prompt} of the book: ").strip()
 
     # Title can not be empty after 3 attempts
     while not title:
         count += 1
         if count == 3:
             count = 0
-            raise ValueError("Aborting...title cannot be empty.")
-        print("\nTitle can't be empty. Please try again.")
-        title = input("\nEnter the title of the book: ").strip()
+            raise ValueError(f"Aborting...{title_prompt} cannot be empty.")
+        print(
+            f"\n{title_prompt.capitalize()} can't be empty. Please try again."
+        )
+        title = input(f"\nEnter the {title_prompt} of the book: ").strip()
 
     # Ensure no excess space in title user provided
     return re.sub(r" +", " ", title)
 
 
-def get_book_author_utility():
+def get_book_author_utility(new_author=None):
     '''Get the author of the book from the user. The user provides the
     author of the book. The function returns the author of the book. The
     author of the book cannot be empty. The user has 3 attempts to
-    provide the author of the book.
+    provide the author of the book. The function takes an optional
+    argument new_author. If new_author is provided, the function will
+    prompt the user to enter the new author of the book.
     '''
-    count = 0  # Reset
+    count = 0  # The number of times user enters an invalid input
 
-    author = input("\nEnter the author of the book: ").strip()
+    # If the field to update is author
+    author_prompt = new_author if new_author else "author"
+
+    author = input(f"\nEnter the {author_prompt} of the book: ").strip()
 
     # Author cannot be empty after 3 attempts
     while not author:
         count += 1
         if count == 3:
             count = 0
-            raise ValueError("Aborting...author cannot be empty.")
-        print("\nAuthor can't be empty. Please try again.")
-        author = input("\nEnter the author of the book: ").strip()
+            raise ValueError(f"Aborting...{author_prompt} cannot be empty.")
+        print(
+            f"\n{author_prompt.capitalize()} can't be empty. Please try again."
+        )
+        author = input(f"\nEnter the {author_prompt} of the book: ").strip()
 
     # Ensure no excess space in author user provided
     return re.sub(r" +", " ", author)
@@ -260,9 +274,9 @@ def get_book_update_info(book_info):
                 
         book_info["qty"] = get_book_qty_utility()
     elif book_info["field"] == "title":
-        book_info["new_title"] = get_book_title_utility()
+        book_info["new_title"] = get_book_title_utility("new title")
     else:
-        book_info["new_author"] = get_book_author_utility()
+        book_info["new_author"] = get_book_author_utility("new author")
 
     return book_info
 
