@@ -21,8 +21,8 @@ from sqlite3 import DatabaseError, DataError
 from tabulate import tabulate
 import os
 import sys
-from classes_copy import BookStore
-from functions_copy import get_book, get_book_info, get_book_update_info, \
+from classes import BookStore
+from functions import get_book, get_book_info, get_book_update_info, \
     get_book_search_query, return_to_menu, exit_utility
 
 if len(sys.argv) < 2:
