@@ -43,7 +43,7 @@ eBookstore is a command-line application with a user-friendly interface that all
 ![Second continuation screenshot of ebookstore](ebookstore_screenshot_2.png)
 
 ## Contributing
-Contributions are welcome! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
+Contributions are welcome! See the [CONTRIBUTING](CONTRIBUTING.md) file for more information.
 
 ## License
 This project is licensed under the MIT License. For more information, please refer to the [LICENSE](LICENSE.md) file.
