@@ -30,7 +30,20 @@ eBookstore is a command-line application with a user-friendly interface that all
     cd ebookstore
     ```
 
-3. Install the required dependencies:
+3. Install a python virtual enviroment. Optional (recommended). Instruction is for Ubuntu. Proceed according to your enviroment
+    ```
+    cd your_dev_folder
+    sudo apt install python3-venv
+    python3 -m venv my_env
+    source my_env/bin/activate
+    ```
+
+    Remember to deactivate the environment when you're done:
+    ```
+    deactivate
+    ```
+
+4. Install the required dependencies:
     ```
     pip install tabulate[widechars]
     ```
