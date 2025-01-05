@@ -1,9 +1,12 @@
 # Import the modules below, if not already imported
 try:
     import re
-    from classes import Book  # Book class from the classes.py file
-except ImportError:
-    pass
+    import logging
+    from classes import Book, BookStoreMySQL, BookStoreSqlite
+except ImportError as e:
+    logging.error(f"Import error: {e}")
+    raise ImportError("Failed to import necessary modules")
+
 
 def get_book_id_utility():
     '''Get the id of the book from the user. The user provides the id
@@ -303,11 +306,46 @@ def get_book_search_query():
     return re.sub(r" +", " ", search_query)
 
 
-def exit_utility(book_store):
-    '''Close the database connection. Print a goodbye message. Exit 
-    the application. 
+def get_database_connection_params(database_connection):
+    '''Get the database connection parameters from the user. The user
+    provides the database connection string. The function returns the
+    database connection parameters in a dictionary. The database
+    connection string must be in the format:
+    'mysql://user:password@host:port/database' or
     '''
-    book_store.db.close()
+    database_params = {}
+    scheme, rest = database_connection.split("//", 1)
+    credentials, host_db = rest.split("@", 1)
+    
+    user, password = credentials.split(":")
+    database_params['user'] = user
+    database_params['password'] = password
+    
+    host_port, database = host_db.split("/", 1)
+    database_params['database'] = database
+    
+    if ':' in host_port:
+        host, port = host_port.split(":")
+        database_params['host'] = host
+        database_params['port'] = port
+    else:
+        database_params['host'] = host_port
+    
+    return database_params
+
+
+def exit_utility(book_store):
+    '''Close the mysql or sqlite database connection, if open. 
+    Print a goodbye message. Exit the application. 
+    '''
+    if isinstance(book_store, BookStoreSqlite):
+        if book_store.db:
+            book_store.cursor.close()
+            book_store.db.close()
+    elif isinstance(book_store, BookStoreMySQL):
+        if book_store.db.is_connected():
+            book_store.cursor.close()
+            book_store.db.close()
     print("\nGoodbye!!!")
     exit()
 
