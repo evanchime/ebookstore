@@ -395,19 +395,19 @@ def get_database_connection(args):
     database_connection_params = {}
     database_file = None
 
-    # Check environment variable for connection URL
-    if os.getenv("MYSQL_CONNECTION_URL"):
-        database_connection_params = get_database_connection_params(
-            os.getenv("MYSQL_CONNECTION_URL")
-        )
+    # Check command line argument for database file
+    if args.database_file:
+        database_file = args.database_file
     # Check command line argument for connection URL
     elif args.connection_url:
         database_connection_params = get_database_connection_params(
             args.connection_url
         )
-    # Check command line argument for database file
-    elif args.database_file:
-        database_file = args.database_file
+    # Check environment variable for connection URL
+    elif os.getenv("MYSQL_CONNECTION_URL"):
+        database_connection_params = get_database_connection_params(
+            os.getenv("MYSQL_CONNECTION_URL")
+        )
 
     # Log error and exit if no database connection is provided
     if not database_connection_params and not database_file:
