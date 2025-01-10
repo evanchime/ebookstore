@@ -47,6 +47,11 @@ class BookStoreSqlite(BookStore):
             "UNICODE_NOCASE", BookStoreSqlite.unicode_nocase_collation
         )
 
+        print(
+            f"\nSuccessfully connected to SQLite " 
+            f"database: {database_connection}"
+        )
+
 
     def _create_table(self):
         """Create a table in the database"""
@@ -338,6 +343,10 @@ class BookStoreMySQL(BookStore):
                 database_connection["port"] if "port" in database_connection 
                 else 3306
             )
+        )
+        print(
+            f"\nSuccessfully connected to MySQL " 
+            f"database: {database_connection['database']}"
         )
 
 
