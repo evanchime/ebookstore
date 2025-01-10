@@ -5,16 +5,12 @@ the clerk to:
 - Delete books from the database
 - Search the database to find a specific book
 
-The program takes two command line arguments:
-- 1st argument is path to the database file named 'data/ebookstore_db'. 
-Feel free to use another file
-- 2nd argument is path to the file containing a predefined table records
-named 'table_records.txt' note: the second argument is optional
-
-The program will use the sqlite3 database to store the book records.
-
-Also the program will be using classes and functions in seperate files 
-to be imported.
+The program takes command line arguments, which might be a path to a 
+database file for sqlite database connection or a connection string for
+mysql database connection. The mysql connection string also can be 
+provided as an environment variable in an environment file. It also 
+takes optional command line arguments: predefined database table 
+records, and a database table name
 '''
 
 import os
