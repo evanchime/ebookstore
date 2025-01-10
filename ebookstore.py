@@ -56,11 +56,11 @@ def main():
 
     table_records = []
 
-    if args.table_records:
+    if args.table_records:  # Read the table records from file provided 
         try:
             with open(args.table_records, 'r') as csvfile:
                 reader = csv.reader(csvfile, delimiter=',', quotechar="'")
-                next(reader)
+                next(reader)  # Skip the header
                 for record in reader:
                     table_records.append(
                         (record[0], record[1], record[2], record[3])
@@ -74,23 +74,27 @@ def main():
     database_connection_params = None
     database_file = None
 
+    # If the connection URL is provided as an environment variable
     if os.getenv("MYSQL_CONNECTION_URL"):
         database_connection_params = get_database_connection_params(
             os.getenv("MYSQL_CONNECTION_URL")
         )
-    elif args.connection_url:
+    # Else if the connection URL is provided as a command line argument
+    elif args.connection_url:  
         database_connection_params = get_database_connection_params(
             args.connection_url
         )
+    # Else if the database file is provided as an environment variable
     elif os.getenv("MYSQL_DATABASE_FILE"):
         database_file = os.getenv("MYSQL_DATABASE_FILE")
+    # Else if the database file is provided as a command line argument
     elif args.database_file:
         database_file = args.database_file
     else:
         logging.error("No database connection provided. Exiting...")
         sys.exit(1)
 
-    if database_connection_params:
+    if database_connection_params:  # Connect to MySQL database
         try:
             book_store = BookStoreMySQL(
                 database_connection_params, args.table_name, table_records
@@ -98,11 +102,11 @@ def main():
         except MySQLDatabaseError as e:
             logging.error(e)
             sys.exit(1)
-    elif database_file:
+    elif database_file:  # Connect to SQLite database
         # Create the directory(s) if it/they doesn't exist
         try:
-            if os.path.dirname(database_file): 
-                os.makedirs(os.path.dirname(database_file), exist_ok=True)
+            #if os.path.dirname(database_file): 
+            os.makedirs(os.path.dirname(database_file), exist_ok=True)
             book_store = BookStoreSqlite(
                 database_file, args.table_name, table_records
             )

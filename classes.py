@@ -50,40 +50,34 @@ class BookStoreSqlite(BookStore):
 
     def _create_table(self):
         """Create a table in the database"""
-        try:    
-            self.cursor = self.db.cursor()
+        self.cursor = self.db.cursor()
 
-            self.cursor.execute(
-                f'''CREATE TABLE IF NOT EXISTS {self.table_name}(
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
-                    author VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
-                    qty INT NOT NULL,
-                    CONSTRAINT {self.table_name}_table_key 
-                    UNIQUE (title, author)
-                );
-                '''
-            )
-            self.db.commit()  
-        except SQLiteDatabaseError as e:
-            self._handle_db_error(e)
+        self.cursor.execute(
+            f'''CREATE TABLE IF NOT EXISTS {self.table_name}(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
+                author VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
+                qty INT NOT NULL,
+                CONSTRAINT {self.table_name}_table_key 
+                UNIQUE (title, author)
+            );
+            '''
+        )
+        self.db.commit()  
 
 
     def _insert_predefined_records(self, table_records):
-        try:
-            # Insert predefined table records into database if provided
-            if table_records is not None:
-                # If records exist in the database, don't throw an error
-                self.cursor.executemany(
-                    f'''INSERT OR IGNORE INTO {self.table_name} 
-                    (id, title, author, qty) 
-                    VALUES (?, ?, ?, ?)
-                    ''', 
-                    table_records
-                )
-                self.db.commit()
-        except SQLiteDatabaseError as e:
-            self._handle_db_error(e)
+        # Insert predefined table records into database if provided
+        if table_records is not None:
+            # If records exist in the database, don't throw an error
+            self.cursor.executemany(
+                f'''INSERT OR IGNORE INTO {self.table_name} 
+                (id, title, author, qty) 
+                VALUES (?, ?, ?, ?)
+                ''', 
+                table_records
+            )
+            self.db.commit()
 
 
     @staticmethod
@@ -336,50 +330,51 @@ class BookStoreMySQL(BookStore):
     def _connect_to_db(self, database_connection):
         """Connect to the database"""
         self.db = mysql.connector.connect(
-            **database_connection
+            host=database_connection["host"],
+            database=database_connection["database"],
+            user=database_connection["user"],
+            password=database_connection["password"],
+            port=(
+                database_connection["port"] if "port" in database_connection 
+                else 3306
+            )
         )
-        
+
 
     def _create_table(self):
         """Create a table in the database"""
-        try:   
-            self.cursor = self.db.cursor()
-            self.cursor.execute(
-                f'''CREATE TABLE IF NOT EXISTS {self.table_name}(
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    title VARCHAR(255) 
-                    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci 
-                    NOT NULL,
-                    author VARCHAR(255) 
-                    CHARACTER SET utf8mb4 
-                    COLLATE utf8mb4_unicode_ci 
-                    NOT NULL,
-                    qty INT NOT NULL,
-                    CONSTRAINT {self.table_name}_table_key 
-                    UNIQUE (title, author)
-                );
-                '''
-            )
-            self.db.commit()  
-        except MySQLDatabaseError as e:
-            self._handle_db_error(e)
+        self.cursor = self.db.cursor()
+        self.cursor.execute(
+            f'''CREATE TABLE IF NOT EXISTS {self.table_name}(
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(255) 
+                CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci 
+                NOT NULL,
+                author VARCHAR(255) 
+                CHARACTER SET utf8mb4 
+                COLLATE utf8mb4_unicode_ci 
+                NOT NULL,
+                qty INT NOT NULL,
+                CONSTRAINT {self.table_name}_table_key 
+                UNIQUE (title, author)
+            );
+            '''
+        )
+        self.db.commit()  
 
 
     def _insert_predefined_records(self, table_records):
-        try:
-            # Insert predefined table records into database if provided
-            if table_records is not None:
-                # If records exist in the database, don't throw an error
-                self.cursor.executemany(
-                    f'''INSERT IGNORE INTO {self.table_name} 
-                    (id, title, author, qty) 
-                    VALUES (%s, %s, %s, %s)
-                    ''', 
-                    table_records
-                )
-                self.db.commit()
-        except MySQLDatabaseError as e:
-            self._handle_db_error(e)
+        # Insert predefined table records into database if provided
+        if table_records is not None:
+            # If records exist in the database, don't throw an error
+            self.cursor.executemany(
+                f'''INSERT IGNORE INTO {self.table_name} 
+                (id, title, author, qty) 
+                VALUES (%s, %s, %s, %s)
+                ''', 
+                table_records
+            )
+            self.db.commit()
 
 
     def update_qty_utility(self, qty, book_info):
