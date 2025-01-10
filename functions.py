@@ -1,7 +1,12 @@
 # Import the modules below, if not already imported
 try:
     import re
+    import sys
+    import csv
     import logging
+    import argparse
+    import os
+    from dotenv import load_dotenv
     from classes import Book, BookStoreMySQL, BookStoreSqlite
 except ImportError as e:
     logging.error(f"Import error: {e}")
@@ -332,6 +337,84 @@ def get_database_connection_params(database_connection):
         database_params['host'] = host_port
     
     return database_params
+
+
+def get_table_records(table_records, table_records_file):
+    try:
+        with open(table_records_file, 'r') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar="'")
+            next(reader)
+            for record in reader:
+                table_records.append(
+                    (record[0], record[1], record[2], record[3])
+                )
+    except FileNotFoundError:
+        logging.error( 
+            f"File not found: File {table_records_file} doesn't exist. " 
+            "Check your spelling." )
+        sys.exit(1)
+
+
+def parse_cli_args():
+    """ Parse the command line arguments.
+    Returns:
+        args: Command line arguments
+    """
+    parser = argparse.ArgumentParser(
+        description='Connect to a database and perform operations'
+    )
+    parser.add_argument(
+        '--connection-url', type=str, help='MySQL connection URL'
+    )
+    parser.add_argument(
+        '--database-file', type=str, help='Sqlite database file'
+    )
+    parser.add_argument(
+        '--table-records', type=str, help='Predefined table records'
+    )
+    parser.add_argument(
+        '--table-name', type=str, help='Table name. Defaults to book'
+    )
+
+    return parser.parse_args()
+
+
+def get_database_connection(args):
+    """
+    Retrieve database connection parameters from various sources.
+
+    Parameters:
+    args (Namespace): Command line arguments.
+
+    Returns:
+    dict, str: Updated database connection parameters and database file.
+    """
+    load_dotenv()
+
+    # Initialize with default values
+    database_connection_params = {}
+    database_file = None
+
+    # Check environment variable for connection URL
+    if os.getenv("MYSQL_CONNECTION_URL"):
+        database_connection_params = get_database_connection_params(
+            os.getenv("MYSQL_CONNECTION_URL")
+        )
+    # Check command line argument for connection URL
+    elif args.connection_url:
+        database_connection_params = get_database_connection_params(
+            args.connection_url
+        )
+    # Check command line argument for database file
+    elif args.database_file:
+        database_file = args.database_file
+
+    # Log error and exit if no database connection is provided
+    if not database_connection_params and not database_file:
+        logging.error("No database connection provided. Exiting...")
+        sys.exit(1)
+
+    return database_connection_params, database_file
 
 
 def exit_utility(book_store):
