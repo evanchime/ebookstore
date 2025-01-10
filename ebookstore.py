@@ -17,10 +17,8 @@ Also the program will be using classes and functions in seperate files
 to be imported.
 '''
 
-import argparse
 import os
 import sys
-import csv
 import logging  
 from sqlite3 import DatabaseError as SQLiteDatabaseError
 from mysql.connector.errors import DatabaseError as MySQLDatabaseError
@@ -28,71 +26,20 @@ from classes import BookStoreMySQL, BookStoreSqlite
 from functions import(
     get_book, get_book_info, get_book_update_info,
     get_book_search_query, return_to_menu, exit_utility, 
-    get_database_connection_params
+    get_database_connection, get_table_records, parse_cli_args,
 )
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='Connect to a database and perform operations'
-    )
-    parser.add_argument(
-        '--connection-url', type=str, help='MySQL connection URL'
-    )
-    parser.add_argument(
-        '--database-file', type=str, help='Sqlite database file'
-    )
-    parser.add_argument(
-        '--table-records', type=str, help='Predefined table records'
-    )
-    parser.add_argument(
-        '--table-name', type=str, help='Table name. Defaults to book'
-    )
-
-    args = parser.parse_args()
+def main(): 
+    args = parse_cli_args()  # Parse the command line arguments
 
     table_records = []
 
     if args.table_records:  # Read the table records from file provided 
-        try:
-            with open(args.table_records, 'r') as csvfile:
-                reader = csv.reader(csvfile, delimiter=',', quotechar="'")
-                next(reader)  # Skip the header
-                for record in reader:
-                    table_records.append(
-                        (record[0], record[1], record[2], record[3])
-                    )
-        except FileNotFoundError:
-            logging.error( 
-                f"File not found: File {args.table_records} doesn't exist. " 
-                "Check your spelling." )
-            sys.exit(1)
+        get_table_records(table_records, args.table_records)
 
-    database_connection_params = None
-    database_file = None
-
-    # If the connection URL is provided as an environment variable
-    if os.getenv("MYSQL_CONNECTION_URL"):
-        database_connection_params = get_database_connection_params(
-            os.getenv("MYSQL_CONNECTION_URL")
-        )
-    # Else if the connection URL is provided as a command line argument
-    elif args.connection_url:  
-        database_connection_params = get_database_connection_params(
-            args.connection_url
-        )
-    # Else if the database file is provided as an environment variable
-    elif os.getenv("MYSQL_DATABASE_FILE"):
-        database_file = os.getenv("MYSQL_DATABASE_FILE")
-    # Else if the database file is provided as a command line argument
-    elif args.database_file:
-        database_file = args.database_file
-    else:
-        logging.error("No database connection provided. Exiting...")
-        sys.exit(1)
+    # Get database connection parameters from various possible sources.
+    database_connection_params, database_file = get_database_connection(args)
 
     if database_connection_params:  # Connect to MySQL database
         try:
@@ -117,7 +64,7 @@ def main():
             )
             sys.exit(1)
         except SQLiteDatabaseError as e:
-            logging.error(e)
+            logging.error(e) 
             sys.exit(1)
 
     while True:
