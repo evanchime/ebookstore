@@ -53,11 +53,22 @@ eBookstore is a command-line application with a user-friendly interface that all
     ```
 
 ## Usage
-1. Run the main script: `python ebookstore.py database_file [predefined_table_records_file]`
-2. Follow the on-screen instructions to interact with the inventory system.
+1. Run the main script: 
+   - `python3 ebookstore.py [--database-file "/path_to_database_file" | --connection-url "database_connection_string"] [--table-records "predefined_table_records_file"] [--table-name "table_name"]`
+2. Database Options:
+   - The path_to_database_file is for SQlite
+   - The database_connection_string is for MySQL
+3. MySQL Connection String Format:
+   - `mysql://user:password@host:port/database`
+4. Environment Variable:
+   - The database connection string can also be provided in a variable in an environment file with the variable named MYSQL_CONNECTION_URL.
+5. Instructions:
+   - Follow the on-screen instructions to interact with the inventory system.
+
 
 ![First screenshot of ebookstore](ebookstore_screenshot_1.png)
 ![Second continuation screenshot of ebookstore](ebookstore_screenshot_2.png)
+
 
 ## Contributing
 Contributions are welcome! See the [CONTRIBUTING](CONTRIBUTING.md) file for more information.
