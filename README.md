@@ -18,6 +18,7 @@ eBookstore is a command-line application with a user-friendly interface that all
 - Update book information
 - Delete books from the database
 - Search the database to find a specific book
+- User has the choice of using either SQLite or MySQL database.
 
 ## Installation
 1. Clone the repository:
