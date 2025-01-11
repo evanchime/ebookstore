@@ -1,95 +1,88 @@
 # Import the following if they are not already imported:
 try:
-    import sqlite3 
-    from sqlite3 import DatabaseError
-    from sqlite3 import DataError
+    import logging
+    import sqlite3
+    from sqlite3 import DatabaseError as SQLiteDatabaseError
+    import mysql.connector
+    from mysql.connector.errors import DatabaseError as MySQLDatabaseError
     from tabulate import tabulate
-except ImportError:
-    pass
+    from abstract_classes import BookStore
+except ImportError as e:
+    logging.error(f"Import error: {e}")
+    raise ImportError("Failed to import necessary modules")
 
-class Book():
-    '''A Book class to hold the book information...title, author, and 
+
+class Book:
+    """A Book class to hold the book information...title, author, and 
     quantity in stock
-    '''
+    """
     def __init__(self, title, author, qty):
         self.title = title
         self.author = author
         self.qty = qty
 
 
-class BookStore():
-    '''A BookStore class to manage the book store inventory. It takes
-    the database file and an optional table as arguments'''
-    def __init__(self, database_file, table_records=None):
+class BookStoreSqlite(BookStore):
+    """A BookStore class to manage the book store inventory. It takes
+    the database file and an optional table as arguments
+    """
+    def __init__(
+            self, database_connection, table_name='book', table_records=None
+        ):
         try:
-            self.db = sqlite3.connect(database_file)
-            # Caseless comparison
-            self.db.create_collation(  
-                "UNICODE_NOCASE", BookStore.unicode_nocase_collation
-            )
-        except DatabaseError as e:
-            self.db.rollback() 
-            self.db.close()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DatabaseError(
-                f"Error on line {line_no} in '{file_name}' while setting up "
-                "the database"
-            ) from e
-        except PermissionError as e:
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise PermissionError(
-                f"Error on line {line_no} in file '{file_name}'. You don't "
-                f"have permission to create file '{database_file}'"
-            ) from e
-          
-        try:    
-            self.cursor = self.db.cursor()
+            self.table_name = table_name
+            self._connect_to_db(database_connection)
+            self._create_table()
+            self._insert_predefined_records(table_records)
+        except (SQLiteDatabaseError, PermissionError) as e:
+            self._handle_db_error(e)
+            
 
-            self.cursor.execute(
-                '''CREATE TABLE IF NOT EXISTS book(
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
-                    author VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
-                    qty INT NOT NULL,
-                    CONSTRAINT book_table_key UNIQUE (title, author)
-                );
-                '''
-            )
-            self.db.commit()  
-        except DatabaseError as e:
-            self.db.rollback()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DatabaseError(
-                f"Error on line {line_no} in file '{file_name}' while "
-                "creating a table in the database"
-            ) from e
+    def _connect_to_db(self, database_connection):
+        """Connect to the database"""
+        self.db = sqlite3.connect(database_connection)
+        
+        # Caseless comparison
+        self.db.create_collation(  
+            "UNICODE_NOCASE", BookStoreSqlite.unicode_nocase_collation
+        )
 
-        try:
-            # Insert predefined table records into database if provided
-            if table_records is not None:
-                # If records exist in the database, don't throw an error
-                self.cursor.executemany(
-                    '''INSERT OR IGNORE INTO book (id, title, author, qty) 
-                    VALUES (?, ?, ?, ?)
-                    ''', 
-                    table_records
-                )
-                self.db.commit()
-        except DatabaseError as e:
-            self.db.rollback()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DatabaseError(
-                f"Error on line {line_no} in file '{file_name}' while "
-                "inserting to a table in the database"
-            ) from e      
+        print(
+            f"\nSuccessfully connected to SQLite " 
+            f"database: {database_connection}"
+        )
+
+
+    def _create_table(self):
+        """Create a table in the database"""
+        self.cursor = self.db.cursor()
+
+        self.cursor.execute(
+            f'''CREATE TABLE IF NOT EXISTS {self.table_name}(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
+                author VARCHAR(255) COLLATE UNICODE_NOCASE NOT NULL,
+                qty INT NOT NULL,
+                CONSTRAINT {self.table_name}_table_key 
+                UNIQUE (title, author)
+            );
+            '''
+        )
+        self.db.commit()  
+
+
+    def _insert_predefined_records(self, table_records):
+        # Insert predefined table records into database if provided
+        if table_records is not None:
+            # If records exist in the database, don't throw an error
+            self.cursor.executemany(
+                f'''INSERT OR IGNORE INTO {self.table_name} 
+                (id, title, author, qty) 
+                VALUES (?, ?, ?, ?)
+                ''', 
+                table_records
+            )
+            self.db.commit()
 
 
     @staticmethod
@@ -104,33 +97,6 @@ class BookStore():
         return 1
     
 
-    @staticmethod
-    def get_update_qty_utility(book_info, record):
-        '''Utility function to get the updated quantity of a book. It
-        takes a dictionary and a tuple as arguments. The dictionary
-        contains the action to perform on the quantity and the quantity
-        to update. The tuple contains the book details. It returns the
-        updated quantity. If the quantity is negative, it raises a
-        DataError
-        '''
-        if book_info["action"] == "sub":
-            # Subtract from database quantity
-            qty = record[3] - book_info["qty"]
-        elif book_info["action"] == "add":
-            # Add to database quantity
-            qty = record[3] + book_info["qty"]  
-        else:  # Set database quantity to a specific value
-            qty = book_info["qty"]  
-        if qty < 0:  # Book quantity can't be negative
-            raise DataError(
-                "You can't perform this operation. You only "
-                f"have {record[3]} of this book in stock, "
-                "but you want to reduce the stock by "
-                f"{book_info["qty"]}"
-            )
-        return qty
-
-
     def update_qty_utility(self, qty, book_info):
         '''Utility function to update the quantity of a book. It takes
         the updated quantity and a dictionary as arguments. The updated
@@ -140,7 +106,7 @@ class BookStore():
         '''
         if "id" in book_info:
             self.cursor.execute(
-                '''UPDATE book SET qty = ? 
+                f'''UPDATE {self.table_name} SET qty = ? 
                 WHERE id = ? 
                 ''', 
                 (
@@ -149,7 +115,8 @@ class BookStore():
                 )
             )
         else:
-            self.cursor.execute('''UPDATE book SET qty = ? 
+            self.cursor.execute(
+                f'''UPDATE {self.table_name} SET qty = ? 
                 WHERE author = ? 
                 AND title = ?
                 ''', 
@@ -162,21 +129,22 @@ class BookStore():
 
 
     def update_title_utility(self, book_info):
-        '''Utility function to update the title of a book. It takes a
-        dictionary as an argument. The dictionary contains the book id,
-        title, author, and the new title. It updates the title of the
-        book in the database
+        '''Update the title of a book in the database.
+         
+        Args:
+             book_info (dict): Contains book id, title, author, and 
+             new title.
         '''
         if "id" in book_info:
             self.cursor.execute(
-                '''UPDATE book SET title = ? 
+                f'''UPDATE {self.table_name} SET title = ? 
                 WHERE id = ?
                 ''', 
                 (book_info["new_title"], book_info["id"])
             )
         else:
             self.cursor.execute(
-                '''UPDATE book SET title = ? 
+                f'''UPDATE {self.table_name} SET title = ? 
                 WHERE author = ? 
                 AND title = ?
                 ''', 
@@ -189,21 +157,22 @@ class BookStore():
 
 
     def update_author_utility(self, book_info):
-        '''Utility function to update the author of a book. It takes a
-        dictionary as an argument. The dictionary contains the book id,
-        title, author, and the new author. It updates the author of the
-        book in the database
+        '''Update the author of a book in the database.
+ 
+        Args:
+             book_info (dict): Contains book id, title, author, and 
+             new author.
         '''
         if "id" in book_info:
             self.cursor.execute(
-                '''UPDATE book SET author = ? 
+                f'''UPDATE {self.table_name} SET author = ? 
                 WHERE id = ?
                 ''', 
                 (book_info["new_author"], book_info["id"])
             )
         else:
             self.cursor.execute(
-                '''UPDATE book SET author = ? 
+                f'''UPDATE {self.table_name} SET author = ? 
                 WHERE author = ? 
                 AND title = ?
                 ''', 
@@ -216,22 +185,20 @@ class BookStore():
 
 
     def find_book(self, book_info):
-        '''Find a book in the database. It takes a dictionary as an
-        argument. The dictionary contains the book id, title, and
-        author. If the book is found, it returns the book details. If
-        the book is not found, it returns None. Book has to exist in
-        order to be updated
+        '''Find a book in the database using a dictionary containing
+        the book id, title, and author. Returns the book details if 
+        found, otherwise returns None.
         '''
         if "id" in book_info:
             self.cursor.execute(
-                '''SELECT * FROM book 
+                f'''SELECT * FROM {self.table_name} 
                 WHERE id = ?
                 ''', 
                 (book_info["id"], )
             )
         else:
             self.cursor.execute(
-                '''SELECT * FROM book 
+                f'''SELECT * FROM {self.table_name} 
                 WHERE author = ? 
                 AND title = ?
                 ''', 
@@ -240,34 +207,14 @@ class BookStore():
         return self.cursor.fetchone()
     
 
-    def update_books_utilty(self, book_info, record):
-        '''Utility function to update the book details. It takes a
-        dictionary and a tuple as arguments. The dictionary contains the
-        book id, title, author, the field to update and the new value.
-        The tuple contains the book details. It updates the book details
-        in the database
-        '''
-        # If user wants to update quantity
-        if book_info["field"] == "quantity":
-            qty = self.get_update_qty_utility(book_info, record)
-            self.update_qty_utility(qty, book_info)
-        # If user wants to update title
-        elif book_info["field"] == "title":
-            self.update_title_utility(book_info)
-        else: # If user wants to update author
-            self.update_author_utility(book_info)
-
-
     def insert_book(self, book):
-        '''Insert a book and it's details into the database. It takes a
-        Book object as an argument. The Book object contains the book
-        title, author, and quantity in stock. It prints out id of the
-        book inserted. If the book already exists, it prints a message
-        that the book already exists. If there is an error, it raises a
-        DatabaseError'''
+        '''Insert a book into the database. If the book already exists, 
+        it prints a message. If there is an error, it raises a 
+        SQLiteDatabaseError.
+        '''
         try:
             self.cursor.execute(
-                '''SELECT * FROM book 
+                f'''SELECT * FROM {self.table_name} 
                 WHERE title = ? 
                 AND author = ?
                 ''', 
@@ -275,8 +222,9 @@ class BookStore():
             )
             if not self.cursor.fetchone():
                 self.cursor.execute(
-                    '''
-                    INSERT INTO book (title, author, qty) 
+                    f'''
+                    INSERT INTO {self.table_name} 
+                    (title, author, qty) 
                     VALUES (?, ?, ?)
                     ''', 
                     (book.title, book.author, book.qty)
@@ -285,71 +233,15 @@ class BookStore():
                 print(f"\nBook entered with id: {self.cursor.lastrowid}")
             else:
                 print("\nBook already exists")
-        except DatabaseError as e:
-            self.db.rollback()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DatabaseError(
-                f"Error on line {line_no} on file '{file_name}' while "
-                "inserting a book to the database"
-            ) from e 
-
-
-    def update_book(self, book_info):
-        '''Update a book in the database. It takes a dictionary as an
-        argument. The dictionary contains the book id, title, author,
-        the field to update and the new value, and if quantity to 
-        update, the action on the quantity. If the book is found, it
-        updates the book details and prints a message that the book was
-        updated successfully. If the book is not found, it prints a
-        message that the book was not found. If there is an error, it
-        raises a DatabaseError
-        '''
-        try:
-            if "id" in book_info:  # If user provides the book id
-                record = self.find_book(book_info) 
-                if record:  # If book exists 
-                    self.update_books_utilty(book_info, record)       
-            else:  # If user provides the book author and title 
-                record = self.find_book(book_info)
-                if record:  # If book exists
-                    self.update_books_utilty(book_info, record)
-                    
-            if record:
-                self.db.commit()
-                print("\nBook updated successfully")
-            else:
-                print("\nBook not found")
-        except DataError as e:
-            self.db.rollback()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DataError(
-                f"Error on line {line_no} in file '{file_name}'. You can't "
-                f"perform this operation. You only have {record[3]} "
-                "of this book in stock, but you want to reduce the stock by "
-                f"{book_info["qty"]}"
-            ) from e
-        except DatabaseError as e:
-            self.db.rollback()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DatabaseError(
-                f"Error on line {line_no} in file '{file_name}' while "
-                "updating the book in the database"
-            ) from e 
+        except SQLiteDatabaseError as e:
+            self._handle_db_error(e)
 
 
     def delete_book(self, book_info):
-        '''Delete a book from the database. It takes a dictionary as 
-        an argument. The dictionary contains the book id, title, and
-        author. If the book is found, it deletes the book and prints a
-        message that the book was deleted successfully. If the book is
-        not found, it prints a message that the book was not found. If
-        there is an error, it raises a DatabaseError.
+        '''Delete a book from the database using a dictionary with the 
+        book id, title, and author. Prints a success message if the book 
+        is deleted, otherwise prints a not found message. Raises a 
+        SQLiteDatabaseError on error.
         '''
         try:
             # Inform user if book not found
@@ -357,7 +249,7 @@ class BookStore():
 
             if "id" in book_info:  # If user provides the book id
                 self.cursor.execute(
-                    '''SELECT * FROM book 
+                    f'''SELECT * FROM {self.table_name} 
                     WHERE id = ?
                     ''', 
                     (book_info["id"], )
@@ -365,14 +257,14 @@ class BookStore():
                 if self.cursor.fetchone():  # If book exists 
                     book_found = True
                     self.cursor.execute(
-                        '''DELETE FROM book 
+                        f'''DELETE FROM {self.table_name} 
                         WHERE id = ?
                         ''', 
                         (book_info["id"], )
                     )
             else:  # If user provides the book author and title
                 self.cursor.execute(
-                    '''SELECT * FROM book 
+                    f'''SELECT * FROM {self.table_name} 
                     WHERE author = ? 
                     AND title = ?
                     ''', 
@@ -381,7 +273,7 @@ class BookStore():
                 if self.cursor.fetchone():  # If book exists
                     book_found = True
                     self.cursor.execute(
-                        '''DELETE FROM book 
+                        f'''DELETE FROM {self.table_name} 
                         WHERE author = ? 
                         AND title = ?
                         ''', 
@@ -392,26 +284,17 @@ class BookStore():
                 print("\nBook deleted successfully")
             else:
                 print("\nBook not found")
-        except DatabaseError as e:
-            self.db.rollback()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DatabaseError(
-                f"Error on line {line_no} in file '{file_name}' while "
-                "deleting the book in the database"
-            ) from e  
+        except SQLiteDatabaseError as e:
+            self._handle_db_error(e)
 
 
     def search_books(self, search_query):
-        '''Search the database against the user-provided input. If the 
-        book is found, it prints the book details and optionally that of 
-        other books that have a close match. If the book is not found, 
-        it prints a message that the book was not found. If there is an 
-        error, it raises a DatabaseError'''
+        '''Search for books in the database by id, title, or author. 
+        Prints the book details if found, otherwise prints a not found 
+        message. Raises a SQLiteDatabaseError on error.'''
         try:
             self.cursor.execute(
-                '''SELECT * FROM book 
+                f'''SELECT * FROM {self.table_name} 
                 WHERE id LIKE ? 
                 OR title LIKE ?
                 OR author LIKE ?
@@ -430,12 +313,300 @@ class BookStore():
             else:  # Print the book details in a tabular format
                 headers = ["ID", "Title", "Author", "Quantity"]
                 print('\n', tabulate(records, headers))
-        except DatabaseError as e:
-            self.db.rollback()
-            # Get the line number and file name where the error occurred
-            line_no = e.__traceback__.tb_lineno
-            file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise DatabaseError(
-                f"Error on line {line_no} in file '{file_name}' while "
-                "searching for the book in the database"
-            ) from e
+        except SQLiteDatabaseError as e:
+            self._handle_db_error(e)
+
+
+class BookStoreMySQL(BookStore):
+    '''A BookStore class to manage the book store inventory. It takes
+    the database file and an optional table as arguments'''
+    def __init__(
+            self, database_connection, table_name='book', table_records=None
+        ):
+        try:
+            self.table_name = table_name
+            self._connect_to_db(database_connection)
+            self._create_table()
+            self._insert_predefined_records(table_records)
+        except (MySQLDatabaseError, PermissionError) as e:
+            self._handle_db_error(e)
+
+        
+    def _connect_to_db(self, database_connection):
+        """Connect to the database"""
+        self.db = mysql.connector.connect(
+            host=database_connection["host"],
+            database=database_connection["database"],
+            user=database_connection["user"],
+            password=database_connection["password"],
+            port=(
+                database_connection["port"] if "port" in database_connection 
+                else 3306
+            )
+        )
+        print(
+            f"\nSuccessfully connected to MySQL " 
+            f"database: {database_connection['database']}"
+        )
+
+
+    def _create_table(self):
+        """Create a table in the database"""
+        self.cursor = self.db.cursor()
+        self.cursor.execute(
+            f'''CREATE TABLE IF NOT EXISTS {self.table_name}(
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(255) 
+                CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci 
+                NOT NULL,
+                author VARCHAR(255) 
+                CHARACTER SET utf8mb4 
+                COLLATE utf8mb4_unicode_ci 
+                NOT NULL,
+                qty INT NOT NULL,
+                CONSTRAINT {self.table_name}_table_key 
+                UNIQUE (title, author)
+            );
+            '''
+        )
+        self.db.commit()  
+
+
+    def _insert_predefined_records(self, table_records):
+        # Insert predefined table records into database if provided
+        if table_records is not None:
+            # If records exist in the database, don't throw an error
+            self.cursor.executemany(
+                f'''INSERT IGNORE INTO {self.table_name} 
+                (id, title, author, qty) 
+                VALUES (%s, %s, %s, %s)
+                ''', 
+                table_records
+            )
+            self.db.commit()
+
+
+    def update_qty_utility(self, qty, book_info):
+        '''Utility function to update the quantity of a book. It takes
+        the updated quantity and a dictionary as arguments. The updated
+        quantity is the quantity to update. The dictionary contains the
+        book id, title, author, and the quantity to update. It updates
+        the quantity of the book in the database
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                f'''UPDATE {self.table_name} SET qty = %s 
+                WHERE id = %s 
+                ''', 
+                (
+                    qty, 
+                    book_info["id"]
+                )
+            )
+        else:
+            self.cursor.execute(
+                f'''UPDATE {self.table_name} SET qty = %s 
+                WHERE author = %s 
+                AND title = %s
+                ''', 
+                (
+                    qty, 
+                    book_info["author"], 
+                    book_info["title"]
+                )
+            )
+
+
+    def update_title_utility(self, book_info):
+        '''Utility function to update the title of a book. It takes a
+        dictionary as an argument. The dictionary contains the book id,
+        title, author, and the new title. It updates the title of the
+        book in the database
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                f'''UPDATE {self.table_name} SET title = %s 
+                WHERE id = %s
+                ''', 
+                (book_info["new_title"], book_info["id"])
+            )
+        else:
+            self.cursor.execute(
+                f'''UPDATE {self.table_name} SET title = %s 
+                WHERE author = %s 
+                AND title = %s
+                ''', 
+                (
+                    book_info["new_title"], 
+                    book_info["author"], 
+                    book_info["title"]
+                )
+            )
+
+
+    def update_author_utility(self, book_info):
+        '''Utility function to update the author of a book. It takes a
+        dictionary as an argument. The dictionary contains the book id,
+        title, author, and the new author. It updates the author of the
+        book in the database
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                f'''UPDATE {self.table_name} SET author = %s 
+                WHERE id = %s
+                ''', 
+                (book_info["new_author"], book_info["id"])
+            )
+        else:
+            self.cursor.execute(
+                f'''UPDATE {self.table_name} SET author = %s 
+                WHERE author = %s 
+                AND title = %s
+                ''', 
+                (
+                    book_info["new_author"], 
+                    book_info["author"], 
+                    book_info["title"]
+                )
+            )
+
+
+    def find_book(self, book_info):
+        '''Find a book in the database. It takes a dictionary as an
+        argument. The dictionary contains the book id, title, and
+        author. If the book is found, it returns the book details. If
+        the book is not found, it returns None. Book has to exist in
+        order to be updated
+        '''
+        if "id" in book_info:
+            self.cursor.execute(
+                f'''SELECT * FROM {self.table_name} 
+                WHERE id = %s
+                ''', 
+                (book_info["id"], )
+            )
+        else:
+            self.cursor.execute(
+                f'''SELECT * FROM {self.table_name} 
+                WHERE author = %s 
+                AND title = %s
+                ''', 
+                (book_info["author"], book_info["title"])
+            )
+        return self.cursor.fetchone()
+
+    
+    def insert_book(self, book):
+        '''Insert a book and it's details into the database. It takes a
+        Book object as an argument. The Book object contains the book
+        title, author, and quantity in stock. It prints out id of the
+        book inserted. If the book already exists, it prints a message
+        that the book already exists. If there is an error, it raises a
+        MySQLDatabaseError'''
+        try:
+            self.cursor.execute( 
+                f'''SELECT * FROM {self.table_name} 
+                WHERE title = %s 
+                AND author = %s 
+                ''', 
+                (book.title, book.author) 
+            ) 
+            if not self.cursor.fetchone(): 
+                self.cursor.execute( 
+                    f'''INSERT INTO {self.table_name} (title, author, qty) 
+                    VALUES (%s, %s, %s) 
+                    ''', 
+                    (book.title, book.author, book.qty) 
+                ) 
+                self.db.commit() 
+                print(f"\nBook entered with id: {self.cursor.lastrowid}") 
+            else: 
+                print("\nBook already exists")
+        except MySQLDatabaseError as e:
+            self._handle_db_error(e) 
+
+
+    def delete_book(self, book_info):
+        '''Delete a book from the database. It takes a dictionary as 
+        an argument. The dictionary contains the book id, title, and
+        author. If the book is found, it deletes the book and prints a
+        message that the book was deleted successfully. If the book is
+        not found, it prints a message that the book was not found. If
+        there is an error, it raises a MySQLDatabaseError.
+        '''
+        try:
+            # Inform user if book not found 
+            book_found = False 
+            
+            if "id" in book_info: # If user provides the book id 
+                self.cursor.execute( 
+                    f'''SELECT * FROM {self.table_name} 
+                    WHERE id = %s 
+                    ''', 
+                    (book_info["id"], ) 
+                ) 
+                if self.cursor.fetchone(): # If book exists 
+                    book_found = True 
+                    self.cursor.execute( 
+                        f'''DELETE FROM{self.table_name} 
+                        WHERE id = %s 
+                        ''', 
+                        (book_info["id"], ) 
+                    ) 
+            else: # If user provides the book author and title 
+                self.cursor.execute( 
+                    f'''SELECT * FROM {self.table_name}
+                    WHERE author = %s 
+                    AND title = %s 
+                    ''', 
+                    (book_info["author"], book_info["title"]) 
+                ) 
+                if self.cursor.fetchone(): # If book exists 
+                    book_found = True 
+                    self.cursor.execute( 
+                        f'''DELETE FROM {self.table_name}
+                        WHERE author = %s 
+                        AND title = %s 
+                        ''', 
+                        (book_info["author"], book_info["title"]) 
+                    ) 
+                if book_found: 
+                    self.db.commit() 
+                    print("\nBook deleted successfully") 
+                else: 
+                    print
+                    ("\nBook not found")
+        except MySQLDatabaseError as e:
+            self._handle_db_error(e)  
+
+
+    def search_books(self, search_query):
+        '''Search the database against the user-provided input. If the 
+        book is found, it prints the book details and optionally that of 
+        other books that have a close match. If the book is not found, 
+        it prints a message that the book was not found. If there is an 
+        error, it raises a MySQLDatabaseError'''
+
+        try:
+            self.cursor.execute(
+                f'''SELECT * FROM {self.table_name}
+                WHERE id LIKE %s 
+                OR title LIKE %s
+                OR author LIKE %s
+                ''', 
+                (
+                    '%' + search_query + '%', 
+                    '%' + search_query + '%', 
+                    '%' + search_query + '%', 
+                )
+            )
+
+            records = self.cursor.fetchall()
+
+            if not records:  # If book doesn't exist
+                print("\nBook not found")
+            else:  # Print the book details in a tabular format
+                headers = ["ID", "Title", "Author", "Quantity"]
+                print('\n', tabulate(records, headers))
+        except MySQLDatabaseError as e:
+            self._handle_db_error(e)

@@ -18,6 +18,7 @@ eBookstore is a command-line application with a user-friendly interface that all
 - Update book information
 - Delete books from the database
 - Search the database to find a specific book
+- User has the choice of using either SQLite or MySQL database.
 
 ## Installation
 1. Clone the repository:
@@ -45,15 +46,29 @@ eBookstore is a command-line application with a user-friendly interface that all
 
 4. Install the required dependencies:
     ```
-    pip install tabulate[widechars]
+    python3 -m pip freeze -l > requirements.txt
+    ```
+    ```
+    pip install -r requirements.txt
     ```
 
 ## Usage
-1. Run the main script: `python ebookstore.py database_file [predefined_table_records_file]`
-2. Follow the on-screen instructions to interact with the inventory system.
+1. Run the main script: 
+   - `python3 ebookstore.py [--database-file "/path_to_database_file" | --connection-url "database_connection_string"] [--table-records "predefined_table_records_file"] [--table-name "table_name"]`
+2. Database Options:
+   - The path_to_database_file is for SQlite
+   - The database_connection_string is for MySQL
+3. MySQL Connection String Format:
+   - `mysql://user:password@host:port/database`
+4. Environment Variable:
+   - The database connection string can also be provided in a variable in an environment file with the variable named `MYSQL_CONNECTION_URL`
+5. Instructions:
+   - Follow the on-screen instructions to interact with the inventory system.
+
 
 ![First screenshot of ebookstore](ebookstore_screenshot_1.png)
 ![Second continuation screenshot of ebookstore](ebookstore_screenshot_2.png)
+
 
 ## Contributing
 Contributions are welcome! See the [CONTRIBUTING](CONTRIBUTING.md) file for more information.

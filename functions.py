@@ -1,9 +1,17 @@
 # Import the modules below, if not already imported
 try:
     import re
-    from classes import Book  # Book class from the classes.py file
-except ImportError:
-    pass
+    import sys
+    import csv
+    import logging
+    import argparse
+    import os
+    from dotenv import load_dotenv
+    from classes import Book, BookStoreMySQL, BookStoreSqlite
+except ImportError as e:
+    logging.error(f"Import error: {e}")
+    raise ImportError("Failed to import necessary modules")
+
 
 def get_book_id_utility():
     '''Get the id of the book from the user. The user provides the id
@@ -303,11 +311,124 @@ def get_book_search_query():
     return re.sub(r" +", " ", search_query)
 
 
-def exit_utility(book_store):
-    '''Close the database connection. Print a goodbye message. Exit 
-    the application. 
+def get_database_connection_params(database_connection):
+    '''Get the database connection parameters from the user. The user
+    provides the database connection string. The function returns the
+    database connection parameters in a dictionary. The database
+    connection string must be in the format:
+    'mysql://user:password@host:port/database' or
     '''
-    book_store.db.close()
+    database_params = {}
+    scheme, rest = database_connection.split("//", 1)
+    credentials, host_db = rest.split("@", 1)
+    
+    user, password = credentials.split(":")
+    database_params['user'] = user
+    database_params['password'] = password
+    
+    host_port, database = host_db.split("/", 1)
+    database_params['database'] = database
+    
+    if ':' in host_port:
+        host, port = host_port.split(":")
+        database_params['host'] = host
+        database_params['port'] = port
+    else:
+        database_params['host'] = host_port
+    
+    return database_params
+
+
+def get_table_records(table_records, table_records_file):
+    try:
+        with open(table_records_file, 'r') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar="'")
+            next(reader)
+            for record in reader:
+                table_records.append(
+                    (record[0], record[1], record[2], record[3])
+                )
+    except FileNotFoundError:
+        logging.error( 
+            f"File not found: File {table_records_file} doesn't exist. " 
+            "Check your spelling." )
+        sys.exit(1)
+
+
+def parse_cli_args():
+    """ Parse the command line arguments.
+    Returns:
+        args: Command line arguments
+    """
+    parser = argparse.ArgumentParser(
+        description='Connect to a database and perform operations'
+    )
+    parser.add_argument(
+        '--connection-url', type=str, help='MySQL connection URL'
+    )
+    parser.add_argument(
+        '--database-file', type=str, help='Sqlite database file'
+    )
+    parser.add_argument(
+        '--table-records', type=str, help='Predefined table records'
+    )
+    parser.add_argument(
+        '--table-name', type=str, help='Table name. Defaults to book'
+    )
+
+    return parser.parse_args()
+
+
+def get_database_connection(args):
+    """
+    Retrieve database connection parameters from various sources.
+
+    Parameters:
+    args (Namespace): Command line arguments.
+
+    Returns:
+    dict, str: Updated database connection parameters and database file.
+    """
+    load_dotenv()
+
+    # Initialize with default values
+    database_connection_params = {}
+    database_file = None
+
+    # Check command line argument for database file
+    if args.database_file:
+        database_file = args.database_file
+    # Check command line argument for connection URL
+    elif args.connection_url:
+        database_connection_params = get_database_connection_params(
+            args.connection_url
+        )
+    # Check environment variable for connection URL
+    elif os.getenv("MYSQL_CONNECTION_URL"):
+        database_connection_params = get_database_connection_params(
+            os.getenv("MYSQL_CONNECTION_URL")
+        )
+
+    # Log error and exit if no database connection is provided
+    if not database_connection_params and not database_file:
+        logging.error("No database connection provided. Exiting...")
+        sys.exit(1)
+
+    return database_connection_params, database_file
+
+
+def exit_utility(book_store):
+    '''Close the mysql or sqlite database connection, if open. 
+    Print a goodbye message. Exit the application. 
+    '''
+    if isinstance(book_store, BookStoreSqlite):
+        if book_store.db:
+            book_store.cursor.close()
+            book_store.db.close()
+    elif isinstance(book_store, BookStoreMySQL):
+        if book_store.db.is_connected():
+            book_store.cursor.close()
+            book_store.db.close()
     print("\nGoodbye!!!")
     exit()
 
