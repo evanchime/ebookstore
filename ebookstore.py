@@ -48,8 +48,8 @@ def main():
     elif database_file:  # Connect to SQLite database
         # Create the directory(s) if it/they doesn't exist
         try:
-            #if os.path.dirname(database_file): 
-            os.makedirs(os.path.dirname(database_file), exist_ok=True)
+            if os.path.dirname(database_file): 
+                os.makedirs(os.path.dirname(database_file), exist_ok=True)
             book_store = BookStoreSqlite(
                 database_file, args.table_name, table_records
             )
