@@ -61,7 +61,7 @@ eBookstore is a command-line application with a user-friendly interface that all
 3. MySQL Connection String Format:
    - `mysql://user:password@host:port/database`
 4. Environment Variable:
-   - The database connection string can also be provided in a variable in an environment file with the variable named MYSQL_CONNECTION_URL.
+   - The database connection string can also be provided in a variable in an environment file with the variable named `MYSQL_CONNECTION_URL`
 5. Instructions:
    - Follow the on-screen instructions to interact with the inventory system.
 
