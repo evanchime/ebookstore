@@ -53,22 +53,32 @@ eBookstore is a command-line application with a user-friendly interface that all
     ```
 
 ## Usage
-1. Run the main script: 
-   - `python3 ebookstore.py [--database-file "/path_to_database_file" | --connection-url "database_connection_string"] [--table-records "predefined_table_records_file"] [--table-name "table_name"]`
-2. Database Options:
-   - The path_to_database_file is for SQlite
-   - The database_connection_string is for MySQL
-3. MySQL Connection String Format:
-   - `mysql://user:password@host:port/database`
-4. Environment Variable:
-   - The database connection string can also be provided in a variable in an environment file with the variable named `MYSQL_CONNECTION_URL`
-5. Instructions:
-   - Follow the on-screen instructions to interact with the inventory system.
-
+1. Running Directly on Your Localhost
+   * Run the main script: 
+     - `python3 ebookstore.py [--database-file "/path_to_database_file" | --connection-url "database_connection_string"] [--table-records "predefined_table_records_file"] [--table-name "table_name"]`
+   * Database Options:
+     - The path_to_database_file is for SQlite
+     - The database_connection_string is for MySQL
+   * MySQL Connection String Format:
+     - `mysql://user:password@host:port/database`
+   * Environment Variable:
+     - The database connection string can also be provided in a variable in an environment file with the variable named `MYSQL_CONNECTION_URL`
+   * Instructions:
+     - Follow the on-screen instructions to interact with the inventory system.
+2. Running on Docker Container (Ensure you have root/admin privileges)
+   * Connect to SQLite database
+     - `docker run -i -v path_to_database_file:/data evanchime/ebookstore --database-file "/data/path_to_database_file" [--table-records "/data/path_to_table_records_file"] [--table-name "table_name"]`
+   * Connect to MySQL database from command line
+     - `docker run -i [-v path_to_table_records_file:/data] evanchime/ebookstore --connection-url "database_connection_string" [--table-records "/data/path_to_table_records_file"] [--table-name "table_name"]`
+   * Connect to MySQL database from an environment file
+     - `docker run -i [-v path_to_table_records_file:/data] --env-file path_to_environment_file evanchime/ebookstore [--table-records "/data/path_to_table_records_file"] [--table-name "table_name"]`
+     - You can also use Docker Compose with an environment file
+     - The database connection string in a variable in an environment file should be named `MYSQL_CONNECTION_URL`
+   * MySQL Connection String Format:
+     - `mysql://user:password@host:port/database`
 
 ![First screenshot of ebookstore](ebookstore_screenshot_1.png)
 ![Second continuation screenshot of ebookstore](ebookstore_screenshot_2.png)
-
 
 ## Contributing
 Contributions are welcome! See the [CONTRIBUTING](CONTRIBUTING.md) file for more information.
