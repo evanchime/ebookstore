@@ -73,6 +73,7 @@ eBookstore is a command-line application with a user-friendly interface that all
    * Connect to MySQL database from an environment file
      - `docker run -i [-v path_to_table_records_file:/data] --env-file path_to_environment_file evanchime/ebookstore [--table-records "/data/path_to_table_records_file"] [--table-name "table_name"]`
      - You can also use Docker Compose with an environment file
+     - The database connection string in a variable in an environment file should be named `MYSQL_CONNECTION_URL`
    * MySQL Connection String Format:
      - `mysql://user:password@host:port/database`
 
