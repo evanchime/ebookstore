@@ -2,9 +2,9 @@
 try:
     import logging
     import sqlite3
-    from sqlite3 import DatabaseError as SQLiteDatabaseError
+    from sqlite3 import Error as SQliteError
     import mysql.connector
-    from mysql.connector.errors import DatabaseError as MySQLDatabaseError
+    from mysql.connector.errors import Error as MySQLError
     from tabulate import tabulate
     from abstract_classes import BookStore
 except ImportError as e:
@@ -34,7 +34,7 @@ class BookStoreSqlite(BookStore):
             self._connect_to_db(database_connection)
             self._create_table()
             self._insert_predefined_records(table_records)
-        except (SQLiteDatabaseError, PermissionError) as e:
+        except (SQliteError, PermissionError, Exception) as e:
             self._handle_db_error(e)
             
 
@@ -210,7 +210,7 @@ class BookStoreSqlite(BookStore):
     def insert_book(self, book):
         '''Insert a book into the database. If the book already exists, 
         it prints a message. If there is an error, it raises a 
-        SQLiteDatabaseError.
+        SQliteError.
         '''
         try:
             self.cursor.execute(
@@ -233,7 +233,7 @@ class BookStoreSqlite(BookStore):
                 print(f"\nBook entered with id: {self.cursor.lastrowid}")
             else:
                 print("\nBook already exists")
-        except SQLiteDatabaseError as e:
+        except SQliteError as e:
             self._handle_db_error(e)
 
 
@@ -241,7 +241,7 @@ class BookStoreSqlite(BookStore):
         '''Delete a book from the database using a dictionary with the 
         book id, title, and author. Prints a success message if the book 
         is deleted, otherwise prints a not found message. Raises a 
-        SQLiteDatabaseError on error.
+        SQliteError on error.
         '''
         try:
             # Inform user if book not found
@@ -284,14 +284,14 @@ class BookStoreSqlite(BookStore):
                 print("\nBook deleted successfully")
             else:
                 print("\nBook not found")
-        except SQLiteDatabaseError as e:
+        except SQliteError as e:
             self._handle_db_error(e)
 
 
     def search_books(self, search_query):
         '''Search for books in the database by id, title, or author. 
         Prints the book details if found, otherwise prints a not found 
-        message. Raises a SQLiteDatabaseError on error.'''
+        message. Raises a SQliteError on error.'''
         try:
             self.cursor.execute(
                 f'''SELECT * FROM {self.table_name} 
@@ -313,7 +313,7 @@ class BookStoreSqlite(BookStore):
             else:  # Print the book details in a tabular format
                 headers = ["ID", "Title", "Author", "Quantity"]
                 print('\n', tabulate(records, headers))
-        except SQLiteDatabaseError as e:
+        except SQliteError as e:
             self._handle_db_error(e)
 
 
@@ -328,7 +328,7 @@ class BookStoreMySQL(BookStore):
             self._connect_to_db(database_connection)
             self._create_table()
             self._insert_predefined_records(table_records)
-        except (MySQLDatabaseError, PermissionError) as e:
+        except (MySQLError, PermissionError, Exception) as e:
             self._handle_db_error(e)
 
         
@@ -502,7 +502,7 @@ class BookStoreMySQL(BookStore):
         title, author, and quantity in stock. It prints out id of the
         book inserted. If the book already exists, it prints a message
         that the book already exists. If there is an error, it raises a
-        MySQLDatabaseError'''
+        MySQLError'''
         try:
             self.cursor.execute( 
                 f'''SELECT * FROM {self.table_name} 
@@ -522,7 +522,7 @@ class BookStoreMySQL(BookStore):
                 print(f"\nBook entered with id: {self.cursor.lastrowid}") 
             else: 
                 print("\nBook already exists")
-        except MySQLDatabaseError as e:
+        except MySQLError as e:
             self._handle_db_error(e) 
 
 
@@ -532,7 +532,7 @@ class BookStoreMySQL(BookStore):
         author. If the book is found, it deletes the book and prints a
         message that the book was deleted successfully. If the book is
         not found, it prints a message that the book was not found. If
-        there is an error, it raises a MySQLDatabaseError.
+        there is an error, it raises a MySQLError.
         '''
         try:
             # Inform user if book not found 
@@ -576,7 +576,7 @@ class BookStoreMySQL(BookStore):
                 else: 
                     print
                     ("\nBook not found")
-        except MySQLDatabaseError as e:
+        except MySQLError as e:
             self._handle_db_error(e)  
 
 
@@ -585,7 +585,7 @@ class BookStoreMySQL(BookStore):
         book is found, it prints the book details and optionally that of 
         other books that have a close match. If the book is not found, 
         it prints a message that the book was not found. If there is an 
-        error, it raises a MySQLDatabaseError'''
+        error, it raises a MySQLError'''
 
         try:
             self.cursor.execute(
@@ -608,5 +608,5 @@ class BookStoreMySQL(BookStore):
             else:  # Print the book details in a tabular format
                 headers = ["ID", "Title", "Author", "Quantity"]
                 print('\n', tabulate(records, headers))
-        except MySQLDatabaseError as e:
+        except MySQLError as e:
             self._handle_db_error(e)

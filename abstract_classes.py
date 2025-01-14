@@ -1,7 +1,7 @@
 try:
     import logging
-    from sqlite3 import DatabaseError as SQLiteDatabaseError
-    from mysql.connector.errors import DatabaseError as MySQLDatabaseError
+    from sqlite3 import Error as SQliteError
+    from mysql.connector.errors import Error as MySQLError
     from abc import ABC, abstractmethod
 except ImportError as e:
     logging.error(f"Import error: {e}")
@@ -35,16 +35,20 @@ class BookStore(ABC):
         self.db.rollback()
         line_no = e.__traceback__.tb_lineno
         file_name = e.__traceback__.tb_frame.f_code.co_filename
-        if isinstance(e, SQLiteDatabaseError):
-            raise SQLiteDatabaseError(
+        if isinstance(e, SQliteError):
+            raise Exception(
                 f"Error on line {line_no} in '{file_name}': {str(e)}"
             ) from e
-        if isinstance(e, MySQLDatabaseError):
-            raise MySQLDatabaseError(
+        elif isinstance(e, MySQLError):
+            raise Exception(
                 f"Error on line {line_no} in '{file_name}': {str(e)}"
             ) from e
         elif isinstance(e, PermissionError):
             raise PermissionError(
+                f"Error on line {line_no} in '{file_name}': {str(e)}"
+            ) from e
+        else:
+            raise Exception(
                 f"Error on line {line_no} in '{file_name}': {str(e)}"
             ) from e
 
@@ -154,24 +158,24 @@ class BookStore(ABC):
                 print("\nBook updated successfully")
             else:
                 print("\nBook not found")
-        except SQLiteDatabaseError as e:
+        except SQliteError as e:
             self.db.rollback()
             # Get the line number and file name where the error occurred
             line_no = e.__traceback__.tb_lineno
             file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise SQLiteDatabaseError(
-                f"Error on line {line_no} in file '{file_name}' while "
-                "updating the book in the database"
+            raise Exception(
+                f"Error on line {line_no} in '{file_name}': {str(e)}"
             ) from e 
-        except MySQLDatabaseError as e:
+        except MySQLError as e:
             self.db.rollback()
             # Get the line number and file name where the error occurred
             line_no = e.__traceback__.tb_lineno
             file_name = e.__traceback__.tb_frame.f_code.co_filename
-            raise MySQLDatabaseError(
-                f"Error on line {line_no} in file '{file_name}' while "
-                "updating the book in the database"
+            raise Exception(
+                f"Error on line {line_no} in '{file_name}': {str(e)}"
             ) from e
         except Exception as e:
             self.db.rollback()
-            raise Exception(str(e)) from e
+            raise Exception(
+                f"Error on line {line_no} in '{file_name}': {str(e)}"
+            ) from e
