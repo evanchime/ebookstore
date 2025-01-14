@@ -16,8 +16,6 @@ records, and a database table name
 import os
 import sys
 import logging  
-from sqlite3 import DatabaseError as SQLiteDatabaseError
-from mysql.connector.errors import DatabaseError as MySQLDatabaseError
 from classes import BookStoreMySQL, BookStoreSqlite
 from functions import(
     get_book, get_book_info, get_book_update_info,
@@ -42,7 +40,7 @@ def main():
             book_store = BookStoreMySQL(
                 database_connection_params, args.table_name, table_records
             )
-        except MySQLDatabaseError as e:
+        except Exception as e:
             logging.error(e)
             sys.exit(1)
     elif database_file:  # Connect to SQLite database
@@ -59,7 +57,7 @@ def main():
                 f"directory {os.path.dirname(database_file)}"
             )
             sys.exit(1)
-        except SQLiteDatabaseError as e:
+        except Exception as e:
             logging.error(e) 
             sys.exit(1)
 
@@ -87,9 +85,7 @@ def main():
                     return_to_menu()
                 except ValueError as e:
                     raise e
-                except SQLiteDatabaseError as e:
-                    raise e
-                except MySQLDatabaseError as e:
+                except Exception as e:
                     raise e
             elif menu_1 == '2':
                 try:
@@ -106,10 +102,6 @@ def main():
                     return_to_menu()
                 except ValueError as e:
                     raise e
-                except SQLiteDatabaseError as e:
-                    raise e
-                except MySQLDatabaseError as e:
-                    raise e
                 except Exception as e:
                     raise e
             elif menu_1 == '3':
@@ -124,9 +116,7 @@ def main():
                     return_to_menu()
                 except ValueError as e:
                     raise e
-                except SQLiteDatabaseError as e:
-                    raise e
-                except MySQLDatabaseError as e:
+                except Exception as e:
                     raise e
             elif menu_1 == '4':
                 try:
@@ -140,22 +130,14 @@ def main():
                     return_to_menu()
                 except ValueError as e:
                     raise e
-                except SQLiteDatabaseError as e:
+                except Exception as e:
                     raise e
-                except MySQLDatabaseError as e:
-                    raise e        
             elif menu_1 == '0':
                 # Exit the application
                 exit_utility(book_store) 
             else:
                 print("\nInvalid option. Please try again.")
         except ValueError as e:
-            print('\n', e, sep='')
-            return_to_menu()
-        except SQLiteDatabaseError as e:
-            print('\n', e, sep='')
-            return_to_menu()
-        except MySQLDatabaseError as e:
             print('\n', e, sep='')
             return_to_menu()
         except Exception as e:
