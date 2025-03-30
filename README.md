@@ -23,7 +23,7 @@ eBookstore is a command-line application with a user-friendly interface that all
 ## Installation
 1. Clone the repository:
     ```
-    git clone https://github.com/your-username/ebookstore.git
+    git clone https://github.com/evanchime/ebookstore.git
     ```
 
 2. Navigate to the project directory:
@@ -33,7 +33,6 @@ eBookstore is a command-line application with a user-friendly interface that all
 
 3. Install a python virtual enviroment. Optional (recommended). Instruction is for Ubuntu. Proceed according to your enviroment
     ```
-    cd your_dev_folder
     sudo apt install python3-venv
     python3 -m venv my_env
     source my_env/bin/activate
@@ -45,9 +44,6 @@ eBookstore is a command-line application with a user-friendly interface that all
     ```
 
 4. Install the required dependencies:
-    ```
-    python3 -m pip freeze -l > requirements.txt
-    ```
     ```
     pip install -r requirements.txt
     ```
