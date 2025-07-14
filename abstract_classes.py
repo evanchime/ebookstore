@@ -144,6 +144,7 @@ class BookStore(ABC):
         raises a DatabaseError
         '''
         try:
+            record = None  # Initialize record variable
             if "id" in book_info:  # If user provides the book id
                 record = self.find_book(book_info) 
                 if record:  # If book exists 
@@ -176,6 +177,9 @@ class BookStore(ABC):
             ) from e
         except Exception as e:
             self.db.rollback()
+            # Get the line number and file name where the error occurred
+            line_no = e.__traceback__.tb_lineno
+            file_name = e.__traceback__.tb_frame.f_code.co_filename
             raise Exception(
                 f"Error on line {line_no} in '{file_name}': {str(e)}"
             ) from e
