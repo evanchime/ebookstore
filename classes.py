@@ -196,7 +196,7 @@ class BookStoreSqlite(BookStore):
                 ''', 
                 (book_info["id"], )
             )
-        else:
+        elif "author" in book_info and "title" in book_info:
             self.cursor.execute(
                 f'''SELECT * FROM {self.table_name} 
                 WHERE author = ? 
@@ -204,6 +204,9 @@ class BookStoreSqlite(BookStore):
                 ''', 
                 (book_info["author"], book_info["title"])
             )
+        else:
+            # Invalid book_info format
+            return None
         return self.cursor.fetchone()
     
 
@@ -485,7 +488,7 @@ class BookStoreMySQL(BookStore):
                 ''', 
                 (book_info["id"], )
             )
-        else:
+        elif "author" in book_info and "title" in book_info:
             self.cursor.execute(
                 f'''SELECT * FROM {self.table_name} 
                 WHERE author = %s 
@@ -493,6 +496,9 @@ class BookStoreMySQL(BookStore):
                 ''', 
                 (book_info["author"], book_info["title"])
             )
+        else:
+            # Invalid book_info format
+            return None
         return self.cursor.fetchone()
 
     
@@ -548,7 +554,7 @@ class BookStoreMySQL(BookStore):
                 if self.cursor.fetchone(): # If book exists 
                     book_found = True 
                     self.cursor.execute( 
-                        f'''DELETE FROM{self.table_name} 
+                        f'''DELETE FROM {self.table_name} 
                         WHERE id = %s 
                         ''', 
                         (book_info["id"], ) 
@@ -570,12 +576,12 @@ class BookStoreMySQL(BookStore):
                         ''', 
                         (book_info["author"], book_info["title"]) 
                     ) 
-                if book_found: 
-                    self.db.commit() 
-                    print("\nBook deleted successfully") 
-                else: 
-                    print
-                    ("\nBook not found")
+            
+            if book_found: 
+                self.db.commit() 
+                print("\nBook deleted successfully") 
+            else: 
+                print("\nBook not found")
         except MySQLError as e:
             self._handle_db_error(e)  
 
