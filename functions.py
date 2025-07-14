@@ -342,7 +342,7 @@ def get_database_connection_params(database_connection):
 def get_table_records(table_records, table_records_file):
     try:
         with open(table_records_file, 'r') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar="'")
+            reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             next(reader)
             for record in reader:
                 table_records.append(
