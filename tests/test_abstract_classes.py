@@ -3,7 +3,7 @@ Tests for abstract classes and error handling functionality.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import tempfile
 import os
 import sys
