@@ -21,7 +21,8 @@ class TestAbstractBookStore(unittest.TestCase):
     """Test cases for abstract BookStore class."""
 
     def test_abstract_class_cannot_be_instantiated(self):
-        """Test that BookStore abstract class cannot be instantiated directly."""
+        """Test that BookStore abstract class cannot be instantiated 
+        directly."""
         with self.assertRaises(TypeError):
             BookStore()
 
@@ -50,9 +51,11 @@ class TestAbstractBookStore(unittest.TestCase):
         self.assertEqual(result, 50)  # Set to 50
 
     def test_get_update_qty_utility_negative_result_error(self):
-        """Test quantity update utility raises error for negative result."""
+        """Test quantity update utility raises error for negative 
+        result."""
         book_info = {"action": "sub", "qty": 25}
-        record = (1, "Title", "Author", 20)  # Current qty is 20, trying to subtract 25
+        # Current qty is 20, trying to subtract 25
+        record = (1, "Title", "Author", 20)  
         
         with self.assertRaises(Exception) as context:
             BookStore.get_update_qty_utility(book_info, record)
@@ -63,9 +66,11 @@ class TestAbstractBookStore(unittest.TestCase):
         self.assertIn("but you want to reduce the stock by 25", error_message)
 
     def test_get_update_qty_utility_exact_subtraction(self):
-        """Test quantity update utility with exact subtraction (result = 0)."""
+        """Test quantity update utility with exact subtraction 
+        (result = 0)."""
         book_info = {"action": "sub", "qty": 20}
-        record = (1, "Title", "Author", 20)  # Current qty is 20, subtract 20
+        # Current qty is 20, trying to subtract 20
+        record = (1, "Title", "Author", 20)
         
         result = BookStore.get_update_qty_utility(book_info, record)
         self.assertEqual(result, 0)  # Should be exactly 0
@@ -95,8 +100,12 @@ class TestAbstractBookStore(unittest.TestCase):
                 record = (1, "Test Title", "Test Author", 10)
                 
                 # Mock the utility methods
-                with patch.object(bookstore, 'update_qty_utility') as mock_qty_util:
-                    with patch.object(BookStore, 'get_update_qty_utility', return_value=15):
+                with patch.object(
+                    bookstore, 'update_qty_utility'
+                ) as mock_qty_util:
+                    with patch.object(
+                        BookStore, 'get_update_qty_utility', return_value=15
+                    ):
                         bookstore.update_books_utilty(book_info, record)
                         mock_qty_util.assert_called_once_with(15, book_info)
                 
@@ -121,7 +130,9 @@ class TestAbstractBookStore(unittest.TestCase):
                 record = (1, "Old Title", "Test Author", 10)
                 
                 # Mock the utility method
-                with patch.object(bookstore, 'update_title_utility') as mock_title_util:
+                with patch.object(
+                    bookstore, 'update_title_utility'
+                ) as mock_title_util:
                     bookstore.update_books_utilty(book_info, record)
                     mock_title_util.assert_called_once_with(book_info)
                 
@@ -146,7 +157,9 @@ class TestAbstractBookStore(unittest.TestCase):
                 record = (1, "Test Title", "Old Author", 10)
                 
                 # Mock the utility method
-                with patch.object(bookstore, 'update_author_utility') as mock_author_util:
+                with patch.object(
+                    bookstore, 'update_author_utility'
+                ) as mock_author_util:
                     bookstore.update_books_utilty(book_info, record)
                     mock_author_util.assert_called_once_with(book_info)
                 
@@ -185,9 +198,10 @@ class TestErrorHandling(unittest.TestCase):
                 bookstore._handle_db_error(mock_error)
             
             # Check error message contains file and line info
+            # rollback() is called internally but we can't assert 
+            # on real DB connection
             self.assertIn("Error on line", str(context.exception))
             self.assertIn("Test SQLite error", str(context.exception))
-            # Note: rollback() is called internally but we can't assert on real DB connection
             
             bookstore.db.close()
 
@@ -228,9 +242,10 @@ class TestErrorHandling(unittest.TestCase):
                 bookstore._handle_db_error(mock_error)
             
             # Check that error message contains file and line info
+            # rollback() is called internally but we can't assert 
+            # on real DB connection
             self.assertIn("Error on line", str(context.exception))
             self.assertIn("Permission denied", str(context.exception))
-            # Note: rollback() is called internally but we can't assert on real DB connection
             
             bookstore.db.close()
 
@@ -246,14 +261,16 @@ class TestErrorHandling(unittest.TestCase):
                 mock_error = e
             
             # Test that the error handler properly re-raises with context
-            # Generic errors get converted to Exception type by _handle_db_error
+            # Generic errors get converted to Exception type by 
+            # _handle_db_error
             with self.assertRaises(Exception) as context:
                 bookstore._handle_db_error(mock_error)
             
             # Check that error message contains file and line info
+            # rollback() is called internally but we can't assert 
+            # on real DB connection
             self.assertIn("Error on line", str(context.exception))
             self.assertIn("Generic runtime error", str(context.exception))
-            # Note: rollback() is called internally but we can't assert on real DB connection
             
             bookstore.db.close()
 
@@ -297,7 +314,8 @@ class TestErrorHandling(unittest.TestCase):
             # Insert the book successfully
             bookstore.insert_book(test_book)
             
-            # Try to insert the same book again (should not raise error, just print message)
+            # Try to insert the same book again (should not raise error,
+            #  just print message)
             with patch('builtins.print') as mock_print:
                 bookstore.insert_book(test_book)
                 mock_print.assert_any_call("\nBook already exists")
@@ -315,7 +333,8 @@ class TestErrorHandling(unittest.TestCase):
             
             # Test updating quantity with malformed book_info
             try:
-                bookstore.update_qty_utility(10, {})  # This might cause SQL error
+                # This might cause SQL error
+                bookstore.update_qty_utility(10, {})  
             except Exception:
                 pass  # Expected to fail
             
@@ -384,7 +403,10 @@ class TestEdgeCases(unittest.TestCase):
             bookstore = BookStoreSqlite(self.temp_db.name)
             
             # Test with various special characters
-            special_chars_title = "Title with 'quotes' and \"double quotes\" and $pecial ch@rs!"
+            special_chars_title = (
+                "Title with 'quotes' and \"double quotes\" and "
+                "$pecial ch@rs!"
+            )
             special_chars_author = "Author with àccénts and emojis 📚"
             
             from classes import Book
@@ -392,7 +414,9 @@ class TestEdgeCases(unittest.TestCase):
             bookstore.insert_book(test_book)
             
             # Verify the book can be found
-            book_info = {"title": special_chars_title, "author": special_chars_author}
+            book_info = {
+                "title": special_chars_title, "author": special_chars_author
+            }
             result = bookstore.find_book(book_info)
             self.assertIsNotNone(result)
             self.assertEqual(result[1], special_chars_title)
@@ -402,7 +426,8 @@ class TestEdgeCases(unittest.TestCase):
 
     def test_maximum_quantity_values(self):
         """Test handling of very large quantity values."""
-        book_info = {"action": "add", "qty": 2147483647}  # Max 32-bit int
+         # Max 32-bit int
+        book_info = {"action": "add", "qty": 2147483647} 
         record = (1, "Title", "Author", 0)
         
         result = BookStore.get_update_qty_utility(book_info, record)
@@ -421,7 +446,8 @@ class TestEdgeCases(unittest.TestCase):
             # Search with empty string
             with patch('builtins.print') as mock_print:
                 bookstore.search_books("")
-                # Should find the book since empty string matches everything with LIKE
+                # Should find the book since empty string matches 
+                # everything with LIKE
                 self.assertTrue(mock_print.called)
             
             bookstore.db.close()
@@ -440,12 +466,17 @@ class TestEdgeCases(unittest.TestCase):
                 {"title": "the great gatsby", "author": "f. scott fitzgerald"},
                 {"title": "THE GREAT GATSBY", "author": "F. SCOTT FITZGERALD"},
                 {"title": "The Great Gatsby", "author": "f. scott fitzgerald"},
+                {"title": "The great Gatsby", "author": "F. scott fitzgerald"},
             ]
+            
             
             for book_info in variations:
                 result = bookstore.find_book(book_info)
-                # Due to UNICODE_NOCASE collation, these should all find the book
-                self.assertIsNotNone(result, f"Failed to find book with {book_info}")
+                # Due to UNICODE_NOCASE collation, these should all find 
+                # the book
+                self.assertIsNotNone(
+                    result, f"Failed to find book with {book_info}"
+                )
             
             bookstore.db.close()
 
