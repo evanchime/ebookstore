@@ -17,8 +17,16 @@ class Book:
     quantity in stock
     """
     def __init__(self, title, author, qty):
-        self.title = title
-        self.author = author
+        if not title.strip():
+            raise ValueError("Title cannot be empty")
+        if not author.strip():
+            raise ValueError("Author cannot be empty")
+        if not isinstance(qty, int):
+            raise ValueError("Quantity must be an integer")
+        if qty < 0:
+            raise ValueError("Quantity cannot be negative")
+        self.title = title.strip()
+        self.author = author.strip()
         self.qty = qty
 
 
