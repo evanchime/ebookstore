@@ -31,11 +31,13 @@ class TestBook(unittest.TestCase):
         self.assertEqual(book.qty, self.test_qty)
 
     def test_book_creation_with_spaces_in_title(self):
-        """Test creating a book with spaces in title - spaces should be stripped."""
+        """Test creating a book with spaces in title - spaces should be 
+        stripped."""
         title_with_spaces = "  A Tale of Two Cities  "
         book = Book(title_with_spaces, self.test_author, self.test_qty)
         
-        self.assertEqual(book.title, "A Tale of Two Cities")  # Spaces stripped
+        # Spaces stripped
+        self.assertEqual(book.title, "A Tale of Two Cities")
         self.assertEqual(book.author, self.test_author)
         self.assertEqual(book.qty, self.test_qty)
 
@@ -64,21 +66,24 @@ class TestBook(unittest.TestCase):
         self.assertIn("Author cannot be empty", str(context.exception))
 
     def test_book_creation_whitespace_only_title(self):
-        """Test creating a book with whitespace-only title raises ValueError."""
+        """Test creating a book with whitespace-only title raises 
+        ValueError."""
         with self.assertRaises(ValueError) as context:
             Book("   ", self.test_author, self.test_qty)
         
         self.assertIn("Title cannot be empty", str(context.exception))
 
     def test_book_creation_whitespace_only_author(self):
-        """Test creating a book with whitespace-only author raises ValueError."""
+        """Test creating a book with whitespace-only author raises 
+        ValueError."""
         with self.assertRaises(ValueError) as context:
             Book(self.test_title, "   ", self.test_qty)
         
         self.assertIn("Author cannot be empty", str(context.exception))
 
     def test_book_creation_non_integer_quantity(self):
-        """Test creating a book with non-integer quantity raises ValueError."""
+        """Test creating a book with non-integer quantity raises 
+        ValueError."""
         with self.assertRaises(ValueError) as context:
             Book(self.test_title, self.test_author, "10")
         
@@ -90,7 +95,8 @@ class TestBook(unittest.TestCase):
         self.assertIn("Quantity must be an integer", str(context.exception))
 
     def test_book_creation_negative_quantity_validation(self):
-        """Test creating a book with negative quantity raises ValueError."""
+        """Test creating a book with negative quantity raises 
+        ValueError."""
         with self.assertRaises(ValueError) as context:
             Book(self.test_title, self.test_author, -1)
         
@@ -103,13 +109,6 @@ class TestBook(unittest.TestCase):
         self.assertEqual(book.title, self.test_title)
         self.assertEqual(book.author, self.test_author)
         self.assertEqual(book.qty, 0)
-
-    def test_book_creation_negative_quantity(self):
-        """Test creating a book with negative quantity raises ValueError."""
-        with self.assertRaises(ValueError) as context:
-            Book(self.test_title, self.test_author, -5)
-        
-        self.assertIn("Quantity cannot be negative", str(context.exception))
 
     def test_book_creation_large_quantity(self):
         """Test creating a book with very large quantity."""
@@ -134,7 +133,8 @@ class TestBook(unittest.TestCase):
         self.assertEqual(book.qty, 20)
 
     def test_book_creation_with_special_characters(self):
-        """Test creating a book with special characters in title and author."""
+        """Test creating a book with special characters in title and 
+        author."""
         special_title = "Title with @#$%^&*()_+{}|:<>?[]\\;'\",./"
         special_author = "Author with ñáéíóú çÇ"
         book = Book(special_title, special_author, self.test_qty)
