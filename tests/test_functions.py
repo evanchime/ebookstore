@@ -48,7 +48,10 @@ class TestUtilityFunctions(unittest.TestCase):
         with patch('builtins.print'):
             with self.assertRaises(ValueError) as context:
                 get_book_id_utility()
-            self.assertIn("Aborting...book id must be whole number greater than 0", str(context.exception))
+            self.assertIn(
+                "Aborting...book id must be whole number greater than 0", 
+                str(context.exception)
+            )
 
     @patch('builtins.input')
     def test_do_you_have_book_id_utility_yes(self, mock_input):
@@ -82,7 +85,10 @@ class TestUtilityFunctions(unittest.TestCase):
         with patch('builtins.print'):
             with self.assertRaises(ValueError) as context:
                 do_you_have_book_id_utility()
-            self.assertIn("Aborting...you must enter 'yes' or 'no'", str(context.exception))
+            self.assertIn(
+                "Aborting...you must enter 'yes' or 'no'", 
+                str(context.exception)
+            )
 
     @patch('builtins.input')
     def test_get_book_title_utility_valid_input(self, mock_input):
@@ -113,7 +119,10 @@ class TestUtilityFunctions(unittest.TestCase):
         with patch('builtins.print'):
             with self.assertRaises(ValueError) as context:
                 get_book_title_utility()
-            self.assertIn("Aborting...title cannot be empty", str(context.exception))
+            self.assertIn(
+                "Aborting...title cannot be empty", 
+                str(context.exception)
+            )
 
     @patch('builtins.input')
     def test_get_book_title_utility_new_title(self, mock_input):
@@ -162,8 +171,12 @@ class TestUtilityFunctions(unittest.TestCase):
     @patch('builtins.input')
     def test_get_update_field_utility_valid_inputs(self, mock_input):
         """Test get_update_field_utility with valid inputs."""
-        valid_inputs = ["title", "author", "quantity", "TITLE", "Author", "QUANTITY"]
-        expected_outputs = ["title", "author", "quantity", "title", "author", "quantity"]
+        valid_inputs = [
+            "title", "author", "quantity", "TITLE", "Author", "QUANTITY"
+        ]
+        expected_outputs = [
+            "title", "author", "quantity", "title", "author", "quantity"
+        ]
         
         for input_val, expected_val in zip(valid_inputs, expected_outputs):
             mock_input.return_value = input_val
@@ -177,7 +190,10 @@ class TestUtilityFunctions(unittest.TestCase):
         with patch('builtins.print'):
             with self.assertRaises(ValueError) as context:
                 get_update_field_utility()
-            self.assertIn("Aborting...you must enter 'Title', 'Author' or 'Quantity'", str(context.exception))
+            self.assertIn(
+                "Aborting...you must enter 'Title', 'Author' or 'Quantity'", 
+                str(context.exception)
+            )
 
     @patch('builtins.input')
     def test_get_qty_action_utility_valid_inputs(self, mock_input):
@@ -197,7 +213,10 @@ class TestUtilityFunctions(unittest.TestCase):
         with patch('builtins.print'):
             with self.assertRaises(ValueError) as context:
                 get_qty_action_utility()
-            self.assertIn("Aborting...you must enter 'add' or 'sub' or 'set'", str(context.exception))
+            self.assertIn(
+                "Aborting...you must enter 'add' or 'sub' or 'set'", 
+                str(context.exception)
+            )
 
     @patch('functions.do_you_have_book_id_utility')
     @patch('functions.get_book_id_utility')
@@ -212,7 +231,11 @@ class TestUtilityFunctions(unittest.TestCase):
     @patch('functions.do_you_have_book_id_utility')
     @patch('functions.get_book_title_utility')
     @patch('functions.get_book_author_utility')
-    def test_get_book_info_without_id(self, mock_get_author, mock_get_title, mock_have_id):
+    def test_get_book_info_without_id(
+        self, mock_get_author, 
+        mock_get_title, 
+        mock_have_id
+    ):
         """Test get_book_info when user doesn't have book id."""
         mock_have_id.return_value = "no"
         mock_get_title.return_value = "Test Title"
@@ -301,15 +324,24 @@ class TestUtilityFunctions(unittest.TestCase):
 
     def test_parse_cli_args_with_connection_url(self):
         """Test parse_cli_args with connection URL argument."""
-        with patch('sys.argv', ['ebookstore.py', '--connection-url', 'mysql://user:pass@host/db']):
+        with patch(
+            'sys.argv', 
+            ['ebookstore.py', '--connection-url', 'mysql://user:pass@host/db']
+        ):
             args = parse_cli_args()
             self.assertEqual(args.connection_url, 'mysql://user:pass@host/db')
 
     def test_get_table_records_valid_file(self):
         """Test get_table_records with valid CSV file."""
-        csv_content = "id,title,author,qty\n1,Test Book,Test Author,10\n2,Another Book,Another Author,20"
+        csv_content = (
+            "id,title,author,qty\n"
+            "1,Test Book,Test Author,10\n"
+            "2,Another Book,Another Author,20"
+        )
         
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv') as temp_file:
+        with tempfile.NamedTemporaryFile(
+            mode='w', delete=False, suffix='.csv'
+        ) as temp_file:
             temp_file.write(csv_content)
             temp_file_path = temp_file.name
         
@@ -317,7 +349,10 @@ class TestUtilityFunctions(unittest.TestCase):
             table_records = []
             get_table_records(table_records, temp_file_path)
             
-            expected = [('1', 'Test Book', 'Test Author', '10'), ('2', 'Another Book', 'Another Author', '20')]
+            expected = [
+                ('1', 'Test Book', 'Test Author', '10'), 
+                ('2', 'Another Book', 'Another Author', '20')
+            ]
             self.assertEqual(table_records, expected)
         finally:
             os.unlink(temp_file_path)
@@ -330,14 +365,18 @@ class TestUtilityFunctions(unittest.TestCase):
 
     @patch('os.getenv')
     @patch('functions.load_dotenv')
-    def test_get_database_connection_env_variable(self, mock_load_dotenv, mock_getenv):
+    def test_get_database_connection_env_variable(
+        self, mock_load_dotenv, mock_getenv
+    ):
         """Test get_database_connection with environment variable."""
         mock_args = MagicMock()
         mock_args.database_file = None
         mock_args.connection_url = None
         mock_getenv.return_value = "mysql://user:pass@host/db"
         
-        with patch('functions.get_database_connection_params') as mock_get_params:
+        with patch(
+            'functions.get_database_connection_params'
+        ) as mock_get_params:
             mock_get_params.return_value = {'test': 'params'}
             params, db_file = get_database_connection(mock_args)
             
@@ -346,7 +385,9 @@ class TestUtilityFunctions(unittest.TestCase):
 
     @patch('os.getenv')
     @patch('functions.load_dotenv')
-    def test_get_database_connection_no_connection(self, mock_load_dotenv, mock_getenv):
+    def test_get_database_connection_no_connection(
+        self, mock_load_dotenv, mock_getenv
+    ):
         """Test get_database_connection with no connection provided."""
         mock_args = MagicMock()
         mock_args.database_file = None
@@ -435,7 +476,9 @@ class TestGetBookUpdateInfo(unittest.TestCase):
     @patch('functions.get_update_field_utility')
     @patch('functions.get_qty_action_utility')
     @patch('functions.get_book_qty_utility')
-    def test_get_book_update_info_quantity(self, mock_get_qty, mock_get_action, mock_get_field):
+    def test_get_book_update_info_quantity(
+        self, mock_get_qty, mock_get_action, mock_get_field
+    ):
         """Test get_book_update_info for quantity field."""
         mock_get_field.return_value = "quantity"
         mock_get_action.return_value = "add"
