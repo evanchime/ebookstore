@@ -47,7 +47,12 @@ class TestBookStoreSqlite(unittest.TestCase):
             self.assertIsNotNone(bookstore.cursor)
             
             # Verify table was created
-            bookstore.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='book'")
+            bookstore.cursor.execute(
+                "SELECT name "
+                "FROM sqlite_master "
+                "WHERE type='table' "
+                "AND name='book'"
+            )
             result = bookstore.cursor.fetchone()
             self.assertIsNotNone(result)
             
@@ -62,16 +67,24 @@ class TestBookStoreSqlite(unittest.TestCase):
             self.assertEqual(bookstore.table_name, custom_table)
             
             # Verify custom table was created
-            bookstore.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{custom_table}'")
+            bookstore.cursor.execute(
+                "SELECT name "
+                "FROM sqlite_master "
+                "WHERE type='table' "
+                f"AND name='{custom_table}'"
+            )
             result = bookstore.cursor.fetchone()
             self.assertIsNotNone(result)
             
             bookstore.db.close()
 
     def test_bookstore_sqlite_with_predefined_records(self):
-        """Test BookStoreSqlite initialization with predefined records."""
+        """Test BookStoreSqlite initialization with predefined 
+        records."""
         with patch('builtins.print'):
-            bookstore = BookStoreSqlite(self.db_path, table_records=self.test_records)
+            bookstore = BookStoreSqlite(
+                self.db_path, table_records=self.test_records
+            )
             
             # Verify records were inserted
             bookstore.cursor.execute("SELECT COUNT(*) FROM book")
@@ -101,8 +114,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Verify book was inserted
-            bookstore.cursor.execute("SELECT * FROM book WHERE title = ? AND author = ?", 
-                                   (self.test_book.title, self.test_book.author))
+            bookstore.cursor.execute(
+                "SELECT * FROM book WHERE title = ? AND author = ?", 
+                (self.test_book.title, self.test_book.author)
+            )
             result = bookstore.cursor.fetchone()
             self.assertIsNotNone(result)
             self.assertEqual(result[1], self.test_book.title)
@@ -110,7 +125,9 @@ class TestBookStoreSqlite(unittest.TestCase):
             self.assertEqual(result[3], self.test_book.qty)
             
             # Check if success message was printed
-            mock_print.assert_any_call(f"\nBook entered with id: {bookstore.cursor.lastrowid}")
+            mock_print.assert_any_call(
+                f"\nBook entered with id: {bookstore.cursor.lastrowid}"
+            )
             
             bookstore.db.close()
 
@@ -124,8 +141,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Verify only one record exists
-            bookstore.cursor.execute("SELECT COUNT(*) FROM book WHERE title = ? AND author = ?", 
-                                   (self.test_book.title, self.test_book.author))
+            bookstore.cursor.execute(
+                "SELECT COUNT(*) FROM book WHERE title = ? AND author = ?", 
+                (self.test_book.title, self.test_book.author)
+            )
             count = bookstore.cursor.fetchone()[0]
             self.assertEqual(count, 1)
             
@@ -141,8 +160,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Get the inserted book's ID
-            bookstore.cursor.execute("SELECT id FROM book WHERE title = ? AND author = ?", 
-                                   (self.test_book.title, self.test_book.author))
+            bookstore.cursor.execute(
+                "SELECT id FROM book WHERE title = ? AND author = ?", 
+                (self.test_book.title, self.test_book.author)
+            )
             book_id = bookstore.cursor.fetchone()[0]
             
             # Find book by ID
@@ -162,7 +183,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Find book by title and author
-            book_info = {"title": self.test_book.title, "author": self.test_book.author}
+            book_info = {
+                "title": self.test_book.title, 
+                "author": self.test_book.author
+            }
             result = bookstore.find_book(book_info)
             
             self.assertIsNotNone(result)
@@ -190,8 +214,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Get the inserted book's ID
-            bookstore.cursor.execute("SELECT id FROM book WHERE title = ? AND author = ?", 
-                                   (self.test_book.title, self.test_book.author))
+            bookstore.cursor.execute(
+                "SELECT id FROM book WHERE title = ? AND author = ?", 
+                (self.test_book.title, self.test_book.author)
+            )
             book_id = bookstore.cursor.fetchone()[0]
             
             # Delete book by ID
@@ -213,7 +239,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Delete book by title and author
-            book_info = {"title": self.test_book.title, "author": self.test_book.author}
+            book_info = {
+                "title": self.test_book.title, 
+                "author": self.test_book.author
+            }
             bookstore.delete_book(book_info)
             
             # Verify book was deleted
@@ -239,12 +268,15 @@ class TestBookStoreSqlite(unittest.TestCase):
     def test_search_books_found(self):
         """Test searching books with results."""
         with patch('builtins.print') as mock_print:
-            bookstore = BookStoreSqlite(self.db_path, table_records=self.test_records)
+            bookstore = BookStoreSqlite(
+                self.db_path, table_records=self.test_records
+            )
             
             # Search for existing book
             bookstore.search_books("Book 1")
             
-            # Verify tabulated output was printed (we can't easily test the exact output)
+            # Verify tabulated output was printed (we can't easily test 
+            # the exact output)
             self.assertTrue(mock_print.called)
             
             bookstore.db.close()
@@ -263,10 +295,14 @@ class TestBookStoreSqlite(unittest.TestCase):
     def test_search_books_by_author(self):
         """Test searching books by author."""
         with patch('builtins.print'):
-            bookstore = BookStoreSqlite(self.db_path, table_records=self.test_records)
+            bookstore = BookStoreSqlite(
+                self.db_path, table_records=self.test_records
+            )
             
             # Search by author should find books
-            bookstore.cursor.execute("SELECT * FROM book WHERE author LIKE ?", ('%Author 1%',))
+            bookstore.cursor.execute(
+                "SELECT * FROM book WHERE author LIKE ?", ('%Author 1%',)
+            )
             result = bookstore.cursor.fetchall()
             self.assertEqual(len(result), 1)
             
@@ -279,8 +315,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Get book ID
-            bookstore.cursor.execute("SELECT id FROM book WHERE title = ? AND author = ?", 
-                                   (self.test_book.title, self.test_book.author))
+            bookstore.cursor.execute(
+                "SELECT id FROM book WHERE title = ? AND author = ?", 
+                (self.test_book.title, self.test_book.author)
+            )
             book_id = bookstore.cursor.fetchone()[0]
             
             # Update quantity
@@ -302,7 +340,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Update quantity
-            book_info = {"title": self.test_book.title, "author": self.test_book.author}
+            book_info = {
+                "title": self.test_book.title, 
+                "author": self.test_book.author
+            }
             new_qty = 30
             bookstore.update_qty_utility(new_qty, book_info)
             bookstore.db.commit()
@@ -320,8 +361,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Get book ID
-            bookstore.cursor.execute("SELECT id FROM book WHERE title = ? AND author = ?", 
-                                   (self.test_book.title, self.test_book.author))
+            bookstore.cursor.execute(
+                "SELECT id FROM book WHERE title = ? AND author = ?", 
+                (self.test_book.title, self.test_book.author)
+            )
             book_id = bookstore.cursor.fetchone()[0]
             
             # Update title
@@ -343,8 +386,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(self.test_book)
             
             # Get book ID
-            bookstore.cursor.execute("SELECT id FROM book WHERE title = ? AND author = ?", 
-                                   (self.test_book.title, self.test_book.author))
+            bookstore.cursor.execute(
+                "SELECT id FROM book WHERE title = ? AND author = ?", 
+                (self.test_book.title, self.test_book.author)
+            )
             book_id = bookstore.cursor.fetchone()[0]
             
             # Update author
@@ -379,8 +424,10 @@ class TestBookStoreSqlite(unittest.TestCase):
             bookstore.insert_book(test_book)
             
             # Search with different cases
-            bookstore.cursor.execute("SELECT * FROM book WHERE title LIKE ? COLLATE UNICODE_NOCASE", 
-                                   ('%great gatsby%',))
+            bookstore.cursor.execute(
+                "SELECT * FROM book WHERE title LIKE ? COLLATE UNICODE_NOCASE", 
+                ('%great gatsby%',)
+            )
             result = bookstore.cursor.fetchall()
             self.assertEqual(len(result), 1)
             
@@ -407,8 +454,8 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test successful BookStoreMySQL initialization."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
-        mock_db.cursor.return_value = mock_cursor
         mock_connect.return_value = mock_db
+        mock_db.cursor.return_value = mock_cursor
         
         bookstore = BookStoreMySQL(self.db_params)
         
@@ -429,8 +476,8 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test BookStoreMySQL initialization with custom table name."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
-        mock_db.cursor.return_value = mock_cursor
         mock_connect.return_value = mock_db
+        mock_db.cursor.return_value = mock_cursor
         
         custom_table = "custom_books"
         bookstore = BookStoreMySQL(self.db_params, custom_table)
@@ -443,17 +490,19 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test successful book insertion in MySQL."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
+        mock_connect.return_value = mock_db
         mock_db.cursor.return_value = mock_cursor
         mock_cursor.fetchone.return_value = None  # Book doesn't exist
         mock_cursor.lastrowid = 123
-        mock_connect.return_value = mock_db
         
         bookstore = BookStoreMySQL(self.db_params)
         bookstore.insert_book(self.test_book)
         
         # Verify insert was called
-        insert_calls = [arg for arg in mock_cursor.execute.call_args_list 
-                       if 'INSERT INTO' in str(arg)]
+        insert_calls = [
+            arg for arg in mock_cursor.execute.call_args_list 
+            if 'INSERT INTO' in str(arg)
+        ]
         self.assertTrue(len(insert_calls) > 0)
         mock_print.assert_any_call("\nBook entered with id: 123")
 
@@ -463,9 +512,10 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test inserting duplicate book in MySQL."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
-        mock_db.cursor.return_value = mock_cursor
-        mock_cursor.fetchone.return_value = (1, "Test Title", "Test Author", 10)  # Book exists
         mock_connect.return_value = mock_db
+        mock_db.cursor.return_value = mock_cursor
+        # Book exists
+        mock_cursor.fetchone.return_value = (1, "Test Title", "Test Author", 10)  
         
         bookstore = BookStoreMySQL(self.db_params)
         bookstore.insert_book(self.test_book)
@@ -478,9 +528,9 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test finding book by ID in MySQL."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
+        mock_connect.return_value = mock_db
         mock_db.cursor.return_value = mock_cursor
         mock_cursor.fetchone.return_value = (1, "Test Title", "Test Author", 10)
-        mock_connect.return_value = mock_db
         
         bookstore = BookStoreMySQL(self.db_params)
         book_info = {"id": 1}
@@ -494,9 +544,9 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test successful book deletion in MySQL."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
+        mock_connect.return_value = mock_db
         mock_db.cursor.return_value = mock_cursor
         mock_cursor.fetchone.return_value = (1, "Test Title", "Test Author", 10)
-        mock_connect.return_value = mock_db
         
         bookstore = BookStoreMySQL(self.db_params)
         book_info = {"id": 1}
@@ -510,16 +560,20 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test searching books with results in MySQL."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
-        mock_db.cursor.return_value = mock_cursor
-        mock_cursor.fetchall.return_value = [(1, "Test Title", "Test Author", 10)]
         mock_connect.return_value = mock_db
+        mock_db.cursor.return_value = mock_cursor
+        mock_cursor.fetchall.return_value = [
+            (1, "Test Title", "Test Author", 10)
+        ]
         
         bookstore = BookStoreMySQL(self.db_params)
         bookstore.search_books("Test")
         
         # Verify search was executed
-        search_calls = [arg for arg in mock_cursor.execute.call_args_list 
-                       if 'SELECT * FROM' in str(arg) and 'LIKE' in str(arg)]
+        search_calls = [
+            arg for arg in mock_cursor.execute.call_args_list 
+            if 'SELECT * FROM' in str(arg) and 'LIKE' in str(arg)
+        ]
         self.assertTrue(len(search_calls) > 0)
 
     @patch('mysql.connector.connect')
@@ -528,9 +582,9 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test searching books with no results in MySQL."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
+        mock_connect.return_value = mock_db
         mock_db.cursor.return_value = mock_cursor
         mock_cursor.fetchall.return_value = []
-        mock_connect.return_value = mock_db
         
         bookstore = BookStoreMySQL(self.db_params)
         bookstore.search_books("Non-existent")
@@ -543,8 +597,8 @@ class TestBookStoreMySQL(unittest.TestCase):
         """Test MySQL connection without explicit port."""
         mock_db = MagicMock()
         mock_cursor = MagicMock()
-        mock_db.cursor.return_value = mock_cursor
         mock_connect.return_value = mock_db
+        mock_db.cursor.return_value = mock_cursor
         
         db_params_no_port = {
             'host': 'localhost',
@@ -599,8 +653,12 @@ class TestAbstractBookStore(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             BookStore.get_update_qty_utility(book_info, record)
         
-        self.assertIn("You can't perform this operation", str(context.exception))
-        self.assertIn("You only have 10 of this book in stock", str(context.exception))
+        self.assertIn(
+            "You can't perform this operation", str(context.exception)
+        )
+        self.assertIn(
+            "You only have 10 of this book in stock", str(context.exception)
+        )
 
     @patch('builtins.print')
     def test_update_book_integration(self, mock_print):
@@ -614,8 +672,10 @@ class TestAbstractBookStore(unittest.TestCase):
             bookstore.insert_book(test_book)
             
             # Get book ID
-            bookstore.cursor.execute("SELECT id FROM book WHERE title = ? AND author = ?", 
-                                   (test_book.title, test_book.author))
+            bookstore.cursor.execute(
+                "SELECT id FROM book WHERE title = ? AND author = ?", 
+                (test_book.title, test_book.author)
+            )
             book_id = bookstore.cursor.fetchone()[0]
             
             # Test quantity update
