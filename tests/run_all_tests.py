@@ -84,8 +84,14 @@ def run_tests_with_report():
     print(f"Tests run: {result.testsRun}")
     print(f"Failures: {len(result.failures)}")
     print(f"Errors: {len(result.errors)}")
-    print(f"Skipped: {len(result.skipped) if hasattr(result, 'skipped') else 0}")
-    print(f"Success rate: {((result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100):.1f}%")
+    print(
+        f"Skipped: {len(result.skipped) if hasattr(result, 'skipped') else 0}"
+    )
+    passed_tests = result.testsRun - len(result.failures) - len(result.errors)
+    success_rate = (
+        (passed_tests / result.testsRun) * 100
+    ) if result.testsRun else 0
+    print(f"Success rate: {success_rate:.1f}%")
     print(f"Execution time: {end_time - start_time:.2f} seconds")
     
     # Detailed failure and error reporting
@@ -178,9 +184,15 @@ def main():
         
         print("\n" + "=" * 80)
         if success:
-            print("🎉 ALL TESTS PASSED! The ebookstore application is working correctly.")
+            print(
+                "🎉 ALL TESTS PASSED! "
+                "The ebookstore application is working correctly."
+            )
         else:
-            print("❌ SOME TESTS FAILED! Please review the failure reports above.")
+            print(
+                "❌ SOME TESTS FAILED! "
+                "Please review the failure reports above."
+            )
         print("=" * 80)
         
         sys.exit(0 if success else 1)
