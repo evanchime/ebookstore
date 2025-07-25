@@ -155,7 +155,9 @@ class TestEbookstoreIntegration(unittest.TestCase):
                 pass  # Expected when exiting
             
             # Verify that search_books was called
-            mock_bookstore.search_books.assert_called_once_with('test search query')
+            mock_bookstore.search_books.assert_called_once_with(
+                'test search query'
+            )
 
     @patch('sys.argv', ['ebookstore.py', '--database-file', 'test.db'])
     @patch('builtins.input')
@@ -209,18 +211,27 @@ class TestEbookstoreIntegration(unittest.TestCase):
                     pass  # Expected when exiting
                 
                 # Verify error was handled and printed
-                # Check that the error message was printed (the application prints exception objects)
+                # Check that the error message was printed 
+                # (the application prints exception objects)
                 error_found = False
                 for call_args in mock_print.call_args_list:
                     # Check if this call contains the error message
-                    if len(call_args[0]) >= 2 and isinstance(call_args[0][1], ValueError):
+                    if len(call_args[0]) >= 2 and (
+                        isinstance(call_args[0][1], ValueError)
+                    ):
                         if "Test error message" in str(call_args[0][1]):
                             error_found = True
                             break
                 
-                self.assertTrue(error_found, "ValueError with 'Test error message' was not printed")
+                self.assertTrue(
+                    error_found, 
+                    "ValueError with 'Test error message' was not printed"
+                )
 
-    @patch('sys.argv', ['ebookstore.py', '--connection-url', 'mysql://user:pass@host/db'])
+    @patch(
+            'sys.argv', 
+            ['ebookstore.py', '--connection-url', 'mysql://user:pass@host/db']
+    )
     @patch('builtins.input')
     @patch('builtins.print')
     def test_main_mysql_connection(self, mock_print, mock_input):
@@ -239,7 +250,16 @@ class TestEbookstoreIntegration(unittest.TestCase):
             # Verify MySQL bookstore was created
             mock_mysql_class.assert_called_once()
 
-    @patch('sys.argv', ['ebookstore.py', '--database-file', 'test.db', '--table-records', 'records.csv'])
+    @patch(
+            'sys.argv', 
+            [
+                'ebookstore.py', 
+                '--database-file', 
+                'test.db', 
+                '--table-records', 
+                'records.csv'
+            ]
+    )
     @patch('builtins.input')
     @patch('builtins.print')
     def test_main_with_table_records(self, mock_print, mock_input):
@@ -265,12 +285,16 @@ class TestEbookstoreIntegration(unittest.TestCase):
     def test_main_no_database_connection(self, mock_print, mock_input):
         """Test main function with no database connection provided."""
         with patch('ebookstore.get_database_connection') as mock_get_conn:
-            mock_get_conn.side_effect = SystemExit(1)  # Simulate exit due to no connection
+            # Simulate exit due to no connection
+            mock_get_conn.side_effect = SystemExit(1)  
             
             with self.assertRaises(SystemExit):
                 ebookstore.main()
 
-    @patch('sys.argv', ['ebookstore.py', '--database-file', '/invalid/path/test.db'])
+    @patch(
+            'sys.argv', 
+            ['ebookstore.py', '--database-file', '/invalid/path/test.db']
+    )
     @patch('builtins.input')
     @patch('builtins.print')
     def test_main_permission_error(self, mock_print, mock_input):
@@ -293,7 +317,10 @@ class TestEbookstoreIntegration(unittest.TestCase):
             bookstore.insert_book(test_book)
             
             # Verify book was inserted
-            book_info = {"title": "Integration Test Book", "author": "Integration Author"}
+            book_info = {
+                "title": "Integration Test Book", 
+                "author": "Integration Author"
+            }
             result = bookstore.find_book(book_info)
             self.assertIsNotNone(result)
             self.assertEqual(result[1], "Integration Test Book")
@@ -373,7 +400,9 @@ class TestEbookstoreIntegration(unittest.TestCase):
             with self.assertRaises(Exception) as context:
                 bookstore.update_book(book_info)
             
-            self.assertIn("You can't perform this operation", str(context.exception))
+            self.assertIn(
+                "You can't perform this operation", str(context.exception)
+            )
             
             bookstore.db.close()
 
@@ -398,14 +427,32 @@ class TestCommandLineArguments(unittest.TestCase):
 
     def test_table_records_argument(self):
         """Test --table-records argument parsing."""
-        with patch('sys.argv', ['ebookstore.py', '--database-file', 'test.db', '--table-records', 'records.csv']):
+        with patch(
+            'sys.argv', 
+            [
+                'ebookstore.py', 
+                '--database-file', 
+                'test.db', 
+                '--table-records', 
+                'records.csv'
+                ]
+        ):
             from functions import parse_cli_args
             args = parse_cli_args()
             self.assertEqual(args.table_records, 'records.csv')
 
     def test_table_name_argument(self):
         """Test --table-name argument parsing."""
-        with patch('sys.argv', ['ebookstore.py', '--database-file', 'test.db', '--table-name', 'custom_books']):
+        with patch(
+            'sys.argv', 
+            [
+                'ebookstore.py', 
+                '--database-file', 
+                'test.db', 
+                '--table-name', 
+                'custom_books'
+            ]
+        ):
             from functions import parse_cli_args
             args = parse_cli_args()
             self.assertEqual(args.table_name, 'custom_books')
@@ -431,12 +478,16 @@ class TestFileOperations(unittest.TestCase):
 
     def test_csv_file_reading(self):
         """Test reading CSV file with table records."""
-        csv_content = """id,title,author,qty
-1,"Test Book 1","Author 1",10
-2,"Test Book 2","Author 2",20
-3,"Book with, comma","Author, Name",30"""
+        csv_content = (
+            "id,title,author,qty\n"
+            "1,\"Test Book 1\",\"Author 1\",10\n"
+            "2,\"Test Book 2\",\"Author 2\",20\n"
+            "3,\"Book with, comma\",\"Author, Name\",30"
+        )
         
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv') as temp_file:
+        with tempfile.NamedTemporaryFile(
+            mode='w', delete=False, suffix='.csv'
+        ) as temp_file:
             temp_file.write(csv_content)
             temp_file_path = temp_file.name
         
@@ -458,7 +509,9 @@ class TestFileOperations(unittest.TestCase):
         """Test directory creation for database file."""
         temp_dir = tempfile.mkdtemp()
         try:
-            nested_path = os.path.join(temp_dir, 'subdir1', 'subdir2', 'test.db')
+            nested_path = os.path.join(
+                temp_dir, 'subdir1', 'subdir2', 'test.db'
+            )
             
             # This should create the nested directories
             if os.path.dirname(nested_path):
