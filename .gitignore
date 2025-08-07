@@ -1,0 +1,14 @@
+# Virtual environment directory
+.venv/
+
+# Local environment variables
+.env                  
+
+# Python cache directories
+__pycache__/ 
+
+# SQLite database         
+*.sqlite3            
+
+# Cached test results
+.pytest_cache/
