@@ -95,14 +95,14 @@ class TestUtilityFunctions(unittest.TestCase):
         """Test get_book_title_utility with valid input."""
         mock_input.return_value = "Test Book Title"
         result = get_book_title_utility()
-        self.assertEqual(result, "Test Book Title")
+        self.assertEqual(result, "Test book title")
 
     @patch('builtins.input')
     def test_get_book_title_utility_with_extra_spaces(self, mock_input):
         """Test get_book_title_utility with extra spaces."""
         mock_input.return_value = "Test   Book    Title"
         result = get_book_title_utility()
-        self.assertEqual(result, "Test Book Title")
+        self.assertEqual(result, "Test book title")
 
     @patch('builtins.input')
     def test_get_book_title_utility_empty_input(self, mock_input):
@@ -110,7 +110,7 @@ class TestUtilityFunctions(unittest.TestCase):
         mock_input.side_effect = ["", "  ", "Valid Title"]
         with patch('builtins.print'):
             result = get_book_title_utility()
-            self.assertEqual(result, "Valid Title")
+            self.assertEqual(result, "Valid title")
 
     @patch('builtins.input')
     def test_get_book_title_utility_max_attempts_exceeded(self, mock_input):
@@ -129,21 +129,40 @@ class TestUtilityFunctions(unittest.TestCase):
         """Test get_book_title_utility with new_title parameter."""
         mock_input.return_value = "New Title"
         result = get_book_title_utility("new title")
-        self.assertEqual(result, "New Title")
+        self.assertEqual(result, "New title")
+
+    @patch('builtins.input')
+    def test_get_book_title_utility_capitalization_behavior(self, mock_input):
+        """Test get_book_title_utility capitalization behavior with various inputs."""
+        # Test different capitalization scenarios
+        test_cases = [
+            ("lowercase title", "Lowercase title"),
+            ("UPPERCASE TITLE", "Uppercase title"),
+            ("MiXeD cAsE tItLe", "Mixed case title"),
+            ("iOS Programming Guide", "Ios programming guide"),
+            ("the great gatsby", "The great gatsby"),
+            ("harry potter and the philosopher's stone", "Harry potter and the philosopher's stone")
+        ]
+        
+        for input_title, expected_output in test_cases:
+            with self.subTest(input_title=input_title):
+                mock_input.return_value = input_title
+                result = get_book_title_utility()
+                self.assertEqual(result, expected_output)
 
     @patch('builtins.input')
     def test_get_book_author_utility_valid_input(self, mock_input):
         """Test get_book_author_utility with valid input."""
         mock_input.return_value = "Test Author"
         result = get_book_author_utility()
-        self.assertEqual(result, "Test Author")
+        self.assertEqual(result, "TEST AUTHOR")
 
     @patch('builtins.input')
     def test_get_book_author_utility_with_extra_spaces(self, mock_input):
         """Test get_book_author_utility with extra spaces."""
         mock_input.return_value = "Test   Author   Name"
         result = get_book_author_utility()
-        self.assertEqual(result, "Test Author Name")
+        self.assertEqual(result, "TEST AUTHOR NAME")
 
     @patch('builtins.input')
     def test_get_book_author_utility_empty_input(self, mock_input):
@@ -151,7 +170,7 @@ class TestUtilityFunctions(unittest.TestCase):
         mock_input.side_effect = ["", "Valid Author"]
         with patch('builtins.print'):
             result = get_book_author_utility()
-            self.assertEqual(result, "Valid Author")
+            self.assertEqual(result, "VALID AUTHOR")
 
     @patch('builtins.input')
     def test_get_book_qty_utility_valid_input(self, mock_input):
@@ -238,11 +257,11 @@ class TestUtilityFunctions(unittest.TestCase):
     ):
         """Test get_book_info when user doesn't have book id."""
         mock_have_id.return_value = "no"
-        mock_get_title.return_value = "Test Title"
-        mock_get_author.return_value = "Test Author"
+        mock_get_title.return_value = "Test title"
+        mock_get_author.return_value = "TEST AUTHOR"
         
         result = get_book_info()
-        expected = {"title": "Test Title", "author": "Test Author"}
+        expected = {"title": "Test title", "author": "TEST AUTHOR"}
         self.assertEqual(result, expected)
 
     @patch('functions.get_book_title_utility')
@@ -250,14 +269,14 @@ class TestUtilityFunctions(unittest.TestCase):
     @patch('functions.get_book_qty_utility')
     def test_get_book(self, mock_get_qty, mock_get_author, mock_get_title):
         """Test get_book function."""
-        mock_get_title.return_value = "Test Title"
-        mock_get_author.return_value = "Test Author"
+        mock_get_title.return_value = "Test title"
+        mock_get_author.return_value = "TEST AUTHOR"
         mock_get_qty.return_value = 10
         
         result = get_book()
         self.assertIsInstance(result, Book)
-        self.assertEqual(result.title, "Test Title")
-        self.assertEqual(result.author, "Test Author")
+        self.assertEqual(result.title, "Test title")
+        self.assertEqual(result.author, "TEST AUTHOR")
         self.assertEqual(result.qty, 10)
 
     @patch('builtins.input')
@@ -500,7 +519,7 @@ class TestGetBookUpdateInfo(unittest.TestCase):
     def test_get_book_update_info_title(self, mock_get_title, mock_get_field):
         """Test get_book_update_info for title field."""
         mock_get_field.return_value = "title"
-        mock_get_title.return_value = "New Title"
+        mock_get_title.return_value = "New title"
         
         book_info = {"id": 1}
         result = get_book_update_info(book_info)
@@ -508,7 +527,7 @@ class TestGetBookUpdateInfo(unittest.TestCase):
         expected = {
             "id": 1,
             "field": "title",
-            "new_title": "New Title"
+            "new_title": "New title"
         }
         self.assertEqual(result, expected)
 
@@ -517,7 +536,7 @@ class TestGetBookUpdateInfo(unittest.TestCase):
     def test_get_book_update_info_author(self, mock_get_author, mock_get_field):
         """Test get_book_update_info for author field."""
         mock_get_field.return_value = "author"
-        mock_get_author.return_value = "New Author"
+        mock_get_author.return_value = "NEW AUTHOR"
         
         book_info = {"id": 1}
         result = get_book_update_info(book_info)
@@ -525,7 +544,7 @@ class TestGetBookUpdateInfo(unittest.TestCase):
         expected = {
             "id": 1,
             "field": "author",
-            "new_author": "New Author"
+            "new_author": "NEW AUTHOR"
         }
         self.assertEqual(result, expected)
 
