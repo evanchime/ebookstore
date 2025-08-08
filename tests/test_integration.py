@@ -60,8 +60,8 @@ class TestEbookstoreIntegration(unittest.TestCase):
             
             # Verify the book object passed to insert_book
             book_arg = mock_bookstore.insert_book.call_args[0][0]
-            self.assertEqual(book_arg.title, 'Test Book Title')
-            self.assertEqual(book_arg.author, 'Test Author')
+            self.assertEqual(book_arg.title, 'Test book title')
+            self.assertEqual(book_arg.author, 'TEST AUTHOR')
             self.assertEqual(book_arg.qty, 15)
 
     @patch('sys.argv', ['ebookstore.py', '--database-file', 'test.db'])
@@ -129,8 +129,8 @@ class TestEbookstoreIntegration(unittest.TestCase):
             
             # Verify the book_info passed to delete_book
             book_info = mock_bookstore.delete_book.call_args[0][0]
-            self.assertEqual(book_info['title'], 'Test Book')
-            self.assertEqual(book_info['author'], 'Test Author')
+            self.assertEqual(book_info['title'], 'Test book')
+            self.assertEqual(book_info['author'], 'TEST AUTHOR')
 
     @patch('sys.argv', ['ebookstore.py', '--database-file', 'test.db'])
     @patch('builtins.input')

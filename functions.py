@@ -85,7 +85,9 @@ def get_book_title_utility(new_title=None):
     # If the field to update is title
     title_prompt = new_title if new_title else "title"
 
-    title = input(f"\nEnter the {title_prompt} of the book: ").strip()
+    title = input(
+        f"\nEnter the {title_prompt} of the book: "
+    ).strip().capitalize()
 
     # Title can not be empty after 3 attempts
     while not title:
@@ -96,7 +98,9 @@ def get_book_title_utility(new_title=None):
         print(
             f"\n{title_prompt.capitalize()} can't be empty. Please try again."
         )
-        title = input(f"\nEnter the {title_prompt} of the book: ").strip()
+        title = input(
+            f"\nEnter the {title_prompt} of the book: "
+        ).strip().capitalize()
 
     # Ensure no excess space in title user provided
     return re.sub(r" +", " ", title)
@@ -115,7 +119,9 @@ def get_book_author_utility(new_author=None):
     # If the field to update is author
     author_prompt = new_author if new_author else "author"
 
-    author = input(f"\nEnter the {author_prompt} of the book: ").strip()
+    author = input(
+        f"\nEnter the {author_prompt} of the book: "
+    ).strip().upper()
 
     # Author cannot be empty after 3 attempts
     while not author:
@@ -126,7 +132,9 @@ def get_book_author_utility(new_author=None):
         print(
             f"\n{author_prompt.capitalize()} can't be empty. Please try again."
         )
-        author = input(f"\nEnter the {author_prompt} of the book: ").strip()
+        author = input(
+            f"\nEnter the {author_prompt} of the book: "
+        ).strip().upper()
 
     # Ensure no excess space in author user provided
     return re.sub(r" +", " ", author)
