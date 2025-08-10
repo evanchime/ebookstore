@@ -33,12 +33,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          python -m pytest tests/
+          python3 -m pytest tests/
 
   build-and-test-docker:
     name: Build and Test Docker Image
@@ -63,9 +63,10 @@ jobs:
       - name: Test in Docker container
         run: |
           docker run --rm \
+            --entrypoint "" \
             -v ${{ github.workspace }}/tests:/tests \
             evanchime/ebookstore:test \
-            python -m pytest /tests/
+            python3 -m pytest /tests/
 
   push-to-dockerhub:
     name: Push to Docker Hub with Attestation
