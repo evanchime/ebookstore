@@ -110,7 +110,7 @@ class BookStore(ABC):
                 "You can't perform this operation. You only "
                 f"have {record[3]} of this book in stock, "
                 "but you want to reduce the stock by "
-                f"{book_info["qty"]}"
+                f'{book_info["qty"]}'
             )
         return qty
 
