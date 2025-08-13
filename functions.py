@@ -375,7 +375,8 @@ def parse_cli_args():
         '--connection-url', 
         type=str, 
         help='MySQL connection URL '
-             '(e.g., "mysql://user:password@host/database"). '
+        help='MySQL connection URL'
+             ' (e.g., "mysql://user:password@host/database"). '
              'Can also be provided via the MYSQL_CONNECTION_URL '
              'environment variable.'
     )
