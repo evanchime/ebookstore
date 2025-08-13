@@ -52,13 +52,15 @@ eBookstore is a command-line application with a user-friendly interface that all
 1. Running Directly on Your Localhost
    * Run the main script: 
      - `python3 ebookstore.py --database-file "/path_to_database_file"`
-   * For more advanced usage and available command-line arguments, please run:
-     - `python3 ebookstore.py --help`
    * Instructions:
      - Follow the on-screen instructions to interact with the inventory system.
+   * For more advanced usage and available command-line arguments, please run:
+     - `python3 ebookstore.py --help`
 2. Running on Docker Container (Ensure you have root/admin privileges)
    * Run the container:
      - `docker run -i -v path_to_database_file:/data evanchime/ebookstore --database-file "/data/path_to_database_file"`
+   * Instructions:
+     - Follow the on-screen instructions to interact with the inventory system.
    * For more advanced usage and available command-line arguments, please run:
      - `docker run evanchime/ebookstore:latest --help`
 
