@@ -374,10 +374,12 @@ def parse_cli_args():
     parser.add_argument(
         '--connection-url', 
         type=str, 
-        help='MySQL connection URL '
-             '(e.g., "mysql://user:password@host/database"). '
-             'Can also be provided via the MYSQL_CONNECTION_URL '
-             'environment variable.'
+        help=(
+            'MySQL connection URL '
+            '(e.g., "mysql://user:password@host:port/database"). '
+            'Can also be provided via the MYSQL_CONNECTION_URL '
+            'environment variable.'
+        )
     )
     parser.add_argument(
         '--database-file', type=str, help='Sqlite database file'
