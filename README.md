@@ -1,7 +1,7 @@
 # eBookstore
 
 [![Publish ebookstore Docker image](https://github.com/evanchime/ebookstore/actions/workflows/publish_ebookstore_docker_image.yml/badge.svg)](https://github.com/evanchime/ebookstore/actions/workflows/publish_ebookstore_docker_image.yml)
-[![GitHub Release](https://img.shields.io/github/v/release/evanchime/ebookstore)](https://github.com/evanchime/ebookstore/releases/latest )
+[![GitHub Release](https://img.shields.io/github/v/release/evanchime/ebookstore)](https://github.com/evanchime/ebookstore/releases/latest)
 
 Welcome to eBookstore, a Python project for managing a bookstore.
 
