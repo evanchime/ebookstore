@@ -73,24 +73,24 @@ For use in scripts or production, we strongly recommend pinning to a specific ve
 
 There are two main strategies for pinning your version:
 
-**1. Pinning to a Minor Version (e.g., `:v1.0`)**
+**1. Pinning to a Minor Version (e.g., `:vX.X`)**
 
-This approach gives you a balance of stability and automatic security updates. The `:v1.0` tag will always point to the latest patch release within the `1.0.x` series. 
+This approach gives you a balance of stability and automatic security updates. The `:vX.X` tag will always point to the latest patch release within the `X.X.X` series. 
 
 ```sh
-# This will pull the latest patch for v1.0 (e.g., v1.0.1, then v1.0.2 later)
+# This will pull the latest patch for vX.X (e.g., vX.X.1, then vX.X.2 later)
 # Update the version number to match the latest release badge!
-docker pull evanchime/ebookstore:v1.0
+docker pull evanchime/ebookstore:vX.X
 ```
 
-**2. Pinning to a Specific Patch Version (e.g., :v1.0.1)**
+**2. Pinning to a Specific Patch Version (e.g., :vX.X.X)**
 
-This is the most stable and reproducible method. The :v1.0.1 tag is an immutable pointer to a single, specific release and will never change. This is the best choice for critical systems where you must guarantee that the running code is exactly the same every time.
+This is the most stable and reproducible method. The :vX.X.X tag is an immutable pointer to a single, specific release and will never change. This is the best choice for critical systems where you must guarantee that the running code is exactly the same every time.
 
 ```sh
-# This will ALWAYS pull the exact v1.0.1 release and nothing else
+# This will ALWAYS pull the exact vX.X.X release and nothing else
 # Update the version number to match the latest release badge!
-docker pull evanchime/ebookstore:v1.0.1
+docker pull evanchime/ebookstore:vX.X.X
 ```
 
 ![First screenshot of ebookstore](ebookstore_screenshot_1.png)
