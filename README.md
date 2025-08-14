@@ -67,7 +67,7 @@ eBookstore is a command-line application with a user-friendly interface that all
    * For more advanced usage and available command-line arguments, please run:
      - `docker run evanchime/ebookstore:latest --help`
 
-### Stable & Reproducible Docker Usage (Recommended for Production )
+### Stable & Reproducible Docker Usage (Recommended for Production)
 
 For use in scripts or production, we strongly recommend pinning to a specific version tag. This ensures you are always running a predictable, stable version. **Our latest release is shown in the badge at the top of this page.**
 
