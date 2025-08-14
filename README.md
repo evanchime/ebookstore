@@ -1,6 +1,7 @@
 # eBookstore
 
 [![Publish ebookstore Docker image](https://github.com/evanchime/ebookstore/actions/workflows/publish_ebookstore_docker_image.yml/badge.svg)](https://github.com/evanchime/ebookstore/actions/workflows/publish_ebookstore_docker_image.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/evanchime/ebookstore)](https://github.com/evanchime/ebookstore/releases/latest )
 
 Welcome to eBookstore, a Python project for managing a bookstore.
 
@@ -68,16 +69,17 @@ eBookstore is a command-line application with a user-friendly interface that all
 
 ### Stable & Reproducible Docker Usage (Recommended for Production )
 
-For use in scripts, automation, or production environments, we strongly recommend pinning to a specific version tag instead of using `latest`. This ensures you are always running a predictable, stable version of the application.
+For use in scripts or production, we strongly recommend pinning to a specific version tag. This ensures you are always running a predictable, stable version. **Our latest release is shown in the badge at the top of this page.**
 
 There are two main strategies for pinning your version:
 
 **1. Pinning to a Minor Version (e.g., `:v1.0`)**
 
-This approach gives you a balance of stability and automatic security updates. The `:v1.0` tag will always point to the latest patch release within the `1.0.x` series. This is a great choice if you want to receive non-breaking bug fixes automatically.
+This approach gives you a balance of stability and automatic security updates. The `:v1.0` tag will always point to the latest patch release within the `1.0.x` series. 
 
 ```sh
 # This will pull the latest patch for v1.0 (e.g., v1.0.1, then v1.0.2 later)
+# Update the version number to match the latest release badge!
 docker pull evanchime/ebookstore:v1.0
 ```
 
@@ -87,6 +89,7 @@ This is the most stable and reproducible method. The :v1.0.1 tag is an immutable
 
 ```sh
 # This will ALWAYS pull the exact v1.0.1 release and nothing else
+# Update the version number to match the latest release badge!
 docker pull evanchime/ebookstore:v1.0.1
 ```
 
