@@ -1,5 +1,8 @@
 # eBookstore
 
+[![Publish ebookstore Docker image](https://github.com/evanchime/ebookstore/actions/workflows/publish_ebookstore_docker_image.yml/badge.svg)](https://github.com/evanchime/ebookstore/actions/workflows/publish_ebookstore_docker_image.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/evanchime/ebookstore)](https://github.com/evanchime/ebookstore/releases/latest)
+
 Welcome to eBookstore, a Python project for managing a bookstore.
 
 ## Table of Contents
@@ -58,11 +61,37 @@ eBookstore is a command-line application with a user-friendly interface that all
      - `python3 ebookstore.py --help`
 2. Running on Docker Container (Ensure you have root/admin privileges)
    * Run the container:
-     - `docker run -i -v path_to_database_file:/data evanchime/ebookstore --database-file "/data/path_to_database_file"`
+     - `docker run -i -v path_to_database_file:/data evanchime/ebookstore:latest --database-file "/data/path_to_database_file"`
    * Instructions:
      - Follow the on-screen instructions to interact with the inventory system.
    * For more advanced usage and available command-line arguments, please run:
      - `docker run evanchime/ebookstore:latest --help`
+
+### Stable & Reproducible Docker Usage (Recommended for Production)
+
+For use in scripts or production, we strongly recommend pinning to a specific version tag. This ensures you are always running a predictable, stable version. **Our latest release is shown in the badge at the top of this page.**
+
+There are two main strategies for pinning your version:
+
+**1. Pinning to a Minor Version (e.g., `:vX.X`)**
+
+This approach gives you a balance of stability and automatic security updates. The `:vX.X` tag will always point to the latest patch release within the `X.X.X` series. 
+
+```sh
+# This will pull the latest patch for vX.X (e.g., vX.X.1, then vX.X.2 later)
+# Update the version number to match the latest release badge!
+docker pull evanchime/ebookstore:vX.X
+```
+
+**2. Pinning to a Specific Patch Version (e.g., :vX.X.X)**
+
+This is the most stable and reproducible method. The :vX.X.X tag is an immutable pointer to a single, specific release and will never change. This is the best choice for critical systems where you must guarantee that the running code is exactly the same every time.
+
+```sh
+# This will ALWAYS pull the exact vX.X.X release and nothing else
+# Update the version number to match the latest release badge!
+docker pull evanchime/ebookstore:vX.X.X
+```
 
 ![First screenshot of ebookstore](ebookstore_screenshot_1.png)
 ![Second continuation screenshot of ebookstore](ebookstore_screenshot_2.png)
